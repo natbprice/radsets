@@ -137,15 +137,12 @@ getRadialSetsMetadata <- function(networkData) {
 #' @export
 getPointerLoc <- function(metadata,
                           pointer,
-                          plotDomain =
-                            list(
-                              left = -1.557743,
-                              right = 1.557743,
-                              top = 1.08,
-                              bottom = -1.08
-                            ),
+                          plotDomain = list(left = -1.08, right = 1.08,
+                                            bottom = -1.08, top = 1.08),
                           transCoord = FALSE) {
 
+  # names(plotDomain) <- c("left", "right", "bottom", "top")
+  # plotDomain <- as.list(plotDomain)
 
   # Define pointer location
   pointerLoc <- list(location = NULL,
@@ -160,6 +157,7 @@ getPointerLoc <- function(metadata,
   linkData <- metadata$linkData
 
   # Map pointer to plot dat -----------------------------------------------
+  # browser()
   if(transCoord) {
     imageDomain <- pointer$domain
     xImage <- pointer$x
@@ -196,8 +194,10 @@ getPointerLoc <- function(metadata,
 
     # Match pointer to link
     linkMatch <-
-      nearPoints(linkData, pointer, xvar = "x", yvar = "y", addDist = TRUE) %>%
-      arrange(dist_) %>%
+      linkData %>%
+      mutate(dist = sqrt((x - pointer$x)^2 + (y - pointer$y)^2)) %>%
+      arrange(dist) %>%
+      filter(dist <= 0.02) %>%
       filter(row_number() == 1)
 
     # Return early or update location

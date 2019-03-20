@@ -127,35 +127,35 @@ server <- function(input, output, session) {
 
 
   # Render plot -----------------------------------------------------------
-  # output$radPlot <- renderImage({
-  #   req(input$focusSet)
-  #
-  #   width  <- session$clientData$output_radPlot_width
-  #   height <- session$clientData$output_radPlot_height
-  #
-  #   outfile <- tempfile(fileext=".svg")
-  #
-  #   pxToIn <- 1/96
-  #
-  #   svg(outfile,
-  #       width = width*pxToIn,
-  #       height = height*pxToIn)
-  #
-  #   buildRadialSetsPlot(
-  #     setSizes = summaryData()$setSizes,
-  #     setSizesByDegree = summaryData()$setSizesByDegree,
-  #     setIntersections = summaryData()$setIntersections,
-  #     focusSet = input$focusSet,
-  #     linkThickness = input$linkThickness,
-  #     sectorLabelFontSize = 1.5
-  #   )
-  #   dev.off()
-  #
-  #   list(src = outfile,
-  #        width = width,
-  #        height = height)
-  #
-  # }, deleteFile = F)
+  output$radPlotImage <- renderImage({
+    req(input$focusSet)
+
+    width  <- session$clientData$output_radPlotImage_width
+    height <- session$clientData$output_radPlotImage_height
+
+    outfile <- tempfile(fileext=".svg")
+
+    pxToIn <- 1/96
+
+    svg(outfile,
+        width = width*pxToIn,
+        height = height*pxToIn)
+
+    buildRadialSetsPlot(
+      setSizes = summaryData()$setSizes,
+      setSizesByDegree = summaryData()$setSizesByDegree,
+      setIntersections = summaryData()$setIntersections,
+      focusSet = input$focusSet,
+      linkThickness = input$linkThickness,
+      sectorLabelFontSize = 1.5
+    )
+    dev.off()
+
+    list(src = outfile,
+         width = width,
+         height = height)
+
+  }, deleteFile = F)
   output$radPlot <- renderPlot({
     req(input$focusSet)
 
@@ -322,19 +322,20 @@ server <- function(input, output, session) {
                               input$plot_hover,
                               transCoord = T)
 
-    # createRadialsetsTooltip(
-    #   setSizes = summaryData()$setSizes,
-    #   setSizesByDegree = summaryData()$setSizesByDegree,
-    #   setIntersections = summaryData()$setIntersections,
-    #   hoverLoc,
-    #   focusSet = input$focusSet,
-    #   linkThickness = input$linkThickness
-    # )
+    createRadialsetsTooltip(
+      setSizes = summaryData()$setSizes,
+      setSizesByDegree = summaryData()$setSizesByDegree,
+      setIntersections = summaryData()$setIntersections,
+      hoverLoc,
+      focusSet = input$focusSet,
+      linkThickness = input$linkThickness
+    )
 
     # pointer <- input$plot_hover
-    # # browser()
-    print(glue("coord: {round(hoverLoc$x*100)/100}, {round(hoverLoc$y*100)/100}"))
+    # browser()
+    # print(glue("coord: {round(hoverLoc$x*100)/100}, {round(hoverLoc$y*100)/100}"))
   })
+
 
   # Plot click actions ----------------------------------------------------
   observeEvent(input$plotDblClick, {
@@ -435,9 +436,8 @@ server <- function(input, output, session) {
     div(
       style = "position:relative",
       # Plot output
-      # imageOutput(
-      plotOutput(
-        "radPlot",
+      imageOutput(
+        "radPlotImage",
         width = glue("{pageHeight()*0.95}px"),
         height = glue("{pageHeight()*0.95}px"),
         click = "plotClick",
@@ -449,6 +449,19 @@ server <- function(input, output, session) {
                           nullOutside = F),
         inline = F
       ),
+      # plotOutput(
+      #   "radPlot",
+      #   width = glue("{pageHeight()*0.95}px"),
+      #   height = glue("{pageHeight()*0.95}px"),
+      #   click = "plotClick",
+      #   dblclick = "plotDblClick",
+      #   hover = hoverOpts("plot_hover",
+      #                     delay = 100,
+      #                     delayType = "debounce",
+      #                     clip = F,
+      #                     nullOutside = F),
+      #   inline = F
+      # ),
       # Tooltip output
       uiOutput("hover_info")
     )

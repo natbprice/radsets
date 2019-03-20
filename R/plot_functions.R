@@ -43,6 +43,8 @@ buildRadialSetsPlot <- function(setSizes,
   # Define color pallette
   myColors <- randomcoloR::randomColor(nSets)
 
+  par(mar=rep(0,4))
+
   # Initialize circos with 2 tracks
   circlize::circos.clear()
   circlize::circos.par(cell.padding = c(0.02, 0, 0.02, 0))
@@ -63,14 +65,14 @@ buildRadialSetsPlot <- function(setSizes,
     track.index = 1,
     bg.border = NA,
     ylim = c(0, 1),
-    track.height = 0.2,
+    track.height = 0.3,
     panel.fun = function(x, y) {
       sector.index = circlize::get.cell.meta.data("sector.index")
       xlim = circlize::get.cell.meta.data("xlim")
       rlim = circlize::get.cell.meta.data("ylim")
-      circlize::circos.text(mean(xlim),
-                            min(rlim) + 0.1,
-                            adj = 0,
+      circlize::circos.text(xlim[2]/2,
+                            rlim[1],
+                            adj = c(0, 0.5),
                             sector.index,
                             facing = facing,
                             niceFacing = TRUE,
@@ -160,8 +162,6 @@ buildRadialSetsPlot <- function(setSizes,
   } else {
     legendText <- paste0(seq(1,0.25,-0.25)*maxWidth*(1/countScale))
   }
-
-  box()
 
   # Lengend showing link thickness
   if(showLegend){

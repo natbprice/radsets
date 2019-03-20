@@ -1,7 +1,7 @@
 library(tidyverse)
 library(AlgDesign)
 library(purrr)
-
+library(svglite)
 
 
 # Movies ------------------------------------------------------------------
@@ -41,12 +41,14 @@ metadata <- getRadialSetsMetadata(radialSetsData)
 
 
 # png("Plot3.png", width = 2100, height = 2100, units = 'px', res = 300)
-library(svglite)
-svglite("PlotSVG.svg", width = 4, height = 4)
+
+svg("PlotSVG.svg", width = 4, height = 4)
+par(mar=rep(0,4))
 buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections, focusSet = "Sci-Fi")
 dev.off()
 
 png("PlotPng.png", width = 4*96, height = 4*96)
+par(mar=rep(0,4))
 buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections, focusSet = "Sci-Fi")
 dev.off()
 
