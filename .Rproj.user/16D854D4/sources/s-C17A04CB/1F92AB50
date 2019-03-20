@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1553001126872.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1F92AB50",
+    "lastKnownWriteTime" : 1553012061,
+    "last_content_update" : 1553012061947,
+    "path" : "~/radsets/R/plot_functions.R",
+    "project_path" : "R/plot_functions.R",
+    "properties" : {
+        "cursorPosition" : "162,0",
+        "docOutlineVisible" : "1",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
