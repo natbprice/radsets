@@ -11,6 +11,8 @@
 #' @import snakecase
 #' @import dplyr
 #' @importFrom glue glue
+#' @importFrom purrr map pmap
+#' @importFrom tidyr unnest
 #'
 #' @export
 getRadialSetsMetadata <- function(networkData) {
@@ -29,21 +31,21 @@ getRadialSetsMetadata <- function(networkData) {
   sectorData <-
     tibble(set = get.all.sector.index()) %>%
     mutate(
-      theta = map(
+      theta = purrr::map(
         set,
         ~ get.cell.meta.data("xplot", sector.index = .x, track.index = 2) %>%
           t() %>%
           as_tibble() %>%
           rename(theta1 = V1, theta2 = V2)
       ),
-      r = map(
+      r = purrr::map(
         set,
         ~ get.cell.meta.data("yplot", sector.index = .x, track.index = 2) %>%
           t() %>%
           as_tibble() %>%
           rename(r1 = V1, r2 = V2)
       ),
-      s = map(
+      s = purrr::map(
         set,
         ~ get.cell.meta.data("xlim", sector.index = .x, track.index = 2) %>%
           t() %>%
@@ -51,7 +53,7 @@ getRadialSetsMetadata <- function(networkData) {
           rename(s1 = min.data, s2 = max.data)
       )
     ) %>%
-    unnest() %>%
+    tidyr::unnest() %>%
     mutate(theta1 = if_else(theta1 == 0, 360, theta1),
            set = as.factor(set))
 
@@ -100,7 +102,7 @@ getRadialSetsMetadata <- function(networkData) {
         select(set, theta2, r2 = r1),
       by = c("set2" = "set")
     ) %>%
-    mutate(link = pmap(
+    mutate(link = purrr::pmap(
       list(
         theta1 = theta1,
         theta2 = theta2,
@@ -109,7 +111,7 @@ getRadialSetsMetadata <- function(networkData) {
       ),
       ~ circlize:::getQuadraticPoints(..1, ..2, ..3, ..4) %>% as_tibble()
     )) %>%
-    unnest() %>%
+    tidyr::unnest() %>%
     rename(x = V1, y = V2) %>%
     select(set1, set2, x, y)
 

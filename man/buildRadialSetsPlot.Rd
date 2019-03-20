@@ -8,7 +8,8 @@ buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections,
   linkThickness = "percent", focusSet = "none",
   sectorLabelFontSize = 1, axisLabelFontSize = 1,
   maxLinkThickness = 15, countScale = 1, facing = "clockwise",
-  axisLabels = FALSE, legendTitle = NULL)
+  axisLabels = FALSE, legendTitle = NULL, showLegend = FALSE,
+  sectorLineWidth = 2, sectorColor = "white", majorTick = FALSE)
 }
 \description{
 Build radial sets plot
