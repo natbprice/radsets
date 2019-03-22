@@ -1,3 +1,17 @@
+# Load sample data
+data(movieSets)
+
+# Define set names (user specified)
+setNames <- movieSets %>%
+  select(Action:Western) %>%
+  colnames()
+
+# Define ID column (user specified)
+idName <- "movieId"
+
+# Define max degree (user specified)
+maxDegree <- 4
+
 # Calculate set sizes
 setSizes <-
   getSetSizes(movieSets, setNames)
@@ -13,7 +27,7 @@ setIntersections <-
 # Calculate edge data
 overlaps <-
   getSetIntersections(movieSets, setNames, idName) %>%
-  filter(set1 != set2) %>%
+  filter(as.numeric(set1) < as.numeric(set2)) %>%
   arrange(desc(prop))
 
 sets <- levels(overlaps$set1)
@@ -24,75 +38,91 @@ for(i in 1:m) {
   chain[i] <- sets[i]
 }
 
-pb <- txtProgressBar(min = 1, max = nrow(overlaps))
-for(i in 1:nrow(overlaps)) {
+pb <- txtProgressBar(min = 1, max = m)
+for(overlap in 1:nrow(overlaps)) {
 
-  c1 <- chain[[overlaps$set1[i]]]
-  c2 <- chain[[overlaps$set2[i]]]
+  j1 <- overlaps[[overlap, "set1"]]
+  j2 <- overlaps[[overlap, "set2"]]
+  c1 <- chain[[j1]]
+  c2 <- chain[[j2]]
   if (!isTRUE(all.equal(c1,c2))) {
-    cTemp <- list()
-    cTemp[[1]] <-
-      unique(c(chain[[overlaps$set1[i]]], chain[[overlaps$set2[i]]]))
-    cTemp[[2]] <-
-      unique(c(chain[[overlaps$set1[i]]], rev(chain[[overlaps$set2[i]]])))
-    cTemp[[3]] <-
-      unique(c(chain[[overlaps$set2[i]]], chain[[overlaps$set1[i]]]))
-    cTemp[[4]] <-
-      unique(c(chain[[overlaps$set2[i]]], rev(chain[[overlaps$set1[i]]])))
 
-    s <- rep(0, 4)
-    for (j in 1:4) {
+    setOrder <- list()
+    setOrder[[1]] <- unique(c(c1, c2))
+    setOrder[[2]] <- unique(c(c1, rev(c2)))
+    setOrder[[3]] <- unique(c(c2, c1))
+    setOrder[[4]] <- unique(c(c2, rev(c1)))
+
+    ink <- rep(0, 4)
+    for (i in 1:4) {
+
+      # Build plot
       buildRadialSetsPlot(
         setSizes,
         setSizesByDegree,
         setIntersections,
-        focusSet = cTemp[[j]],
-        setOrder = cTemp[[j]]
+        focusSet = setOrder[[i]],
+        setOrder = setOrder[[i]]
       )
 
+      # Radial sets data
+      radialSetsData <-
+        getRadialSetsData(setSizes,
+                          setSizesByDegree,
+                          setIntersections,
+                          focusSet = setOrder[[i]],
+                          setOrder = setOrder[[i]])
+
+      # Plot metadata
       metadata <- getRadialSetsMetadata(radialSetsData)
 
-      s[j] <- metadata$linkData %>%
-        filter(set1 %in% cTemp[[j]],
-               set2 %in% cTemp[[j]]) %>%
+      # Calculate link lengths
+      ink[i] <- metadata$linkData %>%
+        left_join(setIntersections %>%
+                    select(set1, set2, w = prop),
+                  by = c("set1", "set2")) %>%
+        filter(set1 %in% setOrder[[i]],
+               set2 %in% setOrder[[i]]) %>%
         mutate(dx = lead(x) - x,
                dy = lead(y) - y,
-               ds = sqrt(dx ^ 2 + dy ^ 2)) %>%
-        summarize(s = sum(ds, na.rm = TRUE)) %>%
-        pull(s)
+               ds = sqrt(dx ^ 2 + dy ^ 2),
+               dInk = ds*w) %>%
+        summarize(ink = sum(dInk, na.rm = TRUE)) %>%
+        pull(ink)
     }
 
-    index <- which(s == min(s))[1]
-    chain[overlaps$set1[i]] <- cTemp[index]
-    chain[overlaps$set2[i]] <- cTemp[index]
+    index <- which(ink == min(ink))[1]
+    chain[j1] <- setOrder[index]
+    chain[j2] <- setOrder[index]
 
-    if(length(cTemp[[index]]) == m) {
+    if(length(setOrder[[index]]) == m) {
+      optOrder <- setOrder[[index]]
       close(pb)
       break
     }
   }
 
-  setTxtProgressBar(pb, i)
+  setTxtProgressBar(pb, length(setOrder[[index]]))
 
 }
-optOrder <- cTemp[[index]]
+
 
 svg("PlotSVG.svg", width = 12, height = 12)
 buildRadialSetsPlot(
   setSizes,
   setSizesByDegree,
   setIntersections,
-  setOrder = c("Musical", "Animation", "Children", "Fantasy", "Adventure",
-    "Action", "Horror", "Crime", "Thriller", "Sci-Fi", "War", "Mystery",
-    "Drama", "Romance", "Comedy", "Film-Noir", "Western", "IMAX",
-    "Documentary"),
+  setOrder = c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children",
+               "Fantasy", "Adventure", "Action", "Mystery", "War", "Sci-Fi",
+               "Thriller", "Crime", "Horror", "Film-Noir", "IMAX", "Western",
+               "Documentary"),
   # axisLabels = T,
   # axisLabelFontSize = 0.5,
   # majorTick = T,
   # countScale = 1,
   disPropLim = c(-1, 1),
   # facing = "downward"
-  focusSet = "Drama",
+  # focusSet = "Drama",
   sectorColor = "white"
 )
 dev.off()
@@ -120,65 +150,3 @@ buildRadialSetsPlot(
   sectorColor = "white"
 )
 
-# alg 2 -------------------------------------------------------------------
-
-sets <- levels(overlaps$set1)
-setOrder <- c(overlaps$set1[1], overlaps$set2[1])
-for (i in 2:nrow(overlaps)) {
-  set1 <- overlaps$set1[i]
-  set2 <- overlaps$set2[i]
-  newSets <- c(set1, set2)
-  newSets <- newSets[!newSets %in% setOrder]
-  if (length(newSets) > 0) {
-    cTemp <- list()
-    cTemp[[1]] <- c(setOrder, newSets)
-    cTemp[[2]] <- c(setOrder, rev(newSets))
-    cTemp[[3]] <- c(newSets, setOrder)
-    cTemp[[4]] <- c(newSets, rev(setOrder))
-
-    s <- rep(0, 4)
-    for (j in 1:4) {
-      buildRadialSetsPlot(
-        setSizes,
-        setSizesByDegree,
-        setIntersections,
-        focusSet = as.character(sets[cTemp[[j]]]),
-        setOrder = as.character(sets[cTemp[[j]]])
-      )
-
-      metadata <- getRadialSetsMetadata(radialSetsData)
-
-      s[j] <- metadata$linkData %>%
-        filter(set1 %in% as.character(sets[cTemp[[j]]]),
-               set2 %in% as.character(sets[cTemp[[j]]])) %>%
-        mutate(dx = lead(x) - x,
-               dy = lead(y) - y,
-               ds = sqrt(dx ^ 2 + dy ^ 2)) %>%
-        summarize(s = sum(ds, na.rm = TRUE)) %>%
-        pull(s)
-    }
-
-    browser()
-
-    as.character(sets[newSets])
-    as.character(sets[setOrder])
-    as.character(sets[cTemp[[index]]])
-
-    index <- which(s == min(s))[1]
-    setOrder <- cTemp[[index]]
-
-    if (length(setOrder) == m) {
-      break
-    }
-  }
-
-}
-
-optOrder <- as.character(sets[cTemp[[index]]])
-buildRadialSetsPlot(
-  setSizes,
-  setSizesByDegree,
-  setIntersections,
-  focusSet = "Action",
-  setOrder = optOrder
-)
