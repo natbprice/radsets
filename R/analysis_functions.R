@@ -345,8 +345,15 @@ getRadialSetsData <- function(setSizes,
 
     if(!"none" %in% focusSet) {
       # Remove all links besides focus group
-      edges[-which(sets %in% focusSet), ] <- 0
-      edgesDisProp[-which(sets %in% focusSet), ] <- 0
+      if(length(focusSet) == 1) {
+        edges[-which(sets %in% focusSet),] <- 0
+        edgesDisProp[-which(sets %in% focusSet),] <- 0
+      } else {
+        edges[-which(sets %in% focusSet), ] <- 0
+        edges[, -which(sets %in% focusSet)] <- 0
+        edgesDisProp[-which(sets %in% focusSet), ] <- 0
+        edgesDisProp[, -which(sets %in% focusSet)] <- 0
+      }
     }
 
     # Scale edges by thousands
@@ -377,8 +384,15 @@ getRadialSetsData <- function(setSizes,
       rownames(edges) <- sets
 
       # Remove all links besides focus group
-      edges[-which(sets %in% focusSet), ] <- 0
-      edgesDisProp[-which(sets %in% focusSet), ] <- 0
+      if(length(focusSet) == 1) {
+        edges[-which(sets %in% focusSet),] <- 0
+        edgesDisProp[-which(sets %in% focusSet),] <- 0
+      } else {
+        edges[-which(sets %in% focusSet), ] <- 0
+        edges[, -which(sets %in% focusSet)] <- 0
+        edgesDisProp[-which(sets %in% focusSet), ] <- 0
+        edgesDisProp[, -which(sets %in% focusSet)] <- 0
+      }
     }
 
     # Scale edges to percent
@@ -390,7 +404,7 @@ getRadialSetsData <- function(setSizes,
 
   # Map disproportionality to colors
   n <- 101
-  colorVec <- rev(add.alpha(RColorBrewer::brewer.pal(11, "RdBu"), 0.5))
+  colorVec <- rev(RColorBrewer::brewer.pal(11, "RdBu"))
   colorPal <- c(colorRampPalette(c(colorVec[1], colorVec[6]))(51),
             colorRampPalette(c(colorVec[6], colorVec[11]))(51)[-1])
   scaleLimit <- ceiling(max(abs(range(edgesDisProp))) * 10) / 10
