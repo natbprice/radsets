@@ -6,4 +6,4 @@
 The **radsets** package creates Radial Sets diagrams for visualizating
 overlapping sets.
 
-(./README-unnamed-chunk-2-1.svg)
+![](https://github.com/natbprice/radsets/blob/master/README-unnamed-chunk-2-1.svg)
