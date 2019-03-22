@@ -12,7 +12,17 @@
 }
 
 
-#plotContainer {
+#bigPlotContainer {
+	margin: 5px;
+	margin-right: 0px;
+	padding: 0px;
+  	border-radius: 5px;
+  	background: #FFFFFF;
+	border: 1px solid #000000;
+  	height: auto;
+}
+
+#smallPlotContainer {
 	margin: 5px;
 	padding: 0px;
   	border-radius: 5px;
@@ -20,6 +30,7 @@
 	border: 1px solid #000000;
   	height: auto;
 }
+
 
 #tableContainer {
 	margin: 5px;
