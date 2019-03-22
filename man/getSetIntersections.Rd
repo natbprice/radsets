@@ -16,15 +16,18 @@ getSetIntersections(df, setNames, idName)
 \value{
 A data frame with variables:
 \itemize{
- \item \code{set1} and \code{set2} indicating a pair of sets
- \item \code{Nintersect} and \code{Nunion} indicating numer of elements in
+ \item \code{set1} and \code{set2} pair of sets
+ \item \code{Ninter} and \code{Nunion} number of elements in
  the intersection and union of the pair of sets
- \item \code{N1} and \code{N2} indicating number of items in each set
- \item \code{prop1} and \code{prop2} indicating the proportion of items in
+ \item \code{N1} and \code{N2} number of items in each set
+ \item \code{prop1} and \code{prop2} proportion of items in
  each set that are also members of the other set
-  (\code{prop1 = Nintersect / N1})
- \item \code{prop} indicating the proportion of items from either set that
- are members of both sets (\code{prop = Nintersect / Nunion})
+  (\code{prop1 = Ninter / N1})
+ \item \code{prop} proportion of items from either set that
+ are members of both sets (\code{prop = Ninter / Nunion})
+ \item \code{.pred} predictions assuming marginal independence of sets
+ \item \code{.error} difference between predictions and observations
+ \item \code{.relError} error relative to observations
 }
 }
 \description{
