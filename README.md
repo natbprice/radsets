@@ -8,4 +8,3 @@ overlapping
 sets.
 
 ![Example Plot](./README-unnamed-chunk-2-1.svg)
-<img src="./README-unnamed-chunk-2-1.svg">
