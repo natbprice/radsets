@@ -26,8 +26,11 @@ buildRadialSetsPlot <- function(setSizes,
                                 bezierW = 1,
                                 bezierHRatio = 0.75,
                                 colorScaleLim = c(-1, 1),
+                                edgeWidthLim = NULL,
                                 barColor = "darkgrey",
-                                reverseLinkPal = FALSE) {
+                                reverseLinkPal = FALSE,
+                                maxPlotWidth = 15,
+                                minPlotWidth = 1) {
 
 
 
@@ -42,10 +45,14 @@ buildRadialSetsPlot <- function(setSizes,
                                 focusSets = focusSets,
                                 countScale = countScale,
                                 colorScaleLim = colorScaleLim,
-                                reverseLinkPal = reverseLinkPal)
+                                edgeWidthLim = edgeWidthLim,
+                                reverseLinkPal = reverseLinkPal,
+                                maxPlotWidth = maxPlotWidth,
+                                minPlotWidth = minPlotWidth)
 
   # Unpack data
   edgeWidth <- radialSetsData$edgeWidth
+  edgeWidthMap <- radialSetsData$edgeWidthMap
   sets <- radialSetsData$sets
   nSets <- radialSetsData$nSets
   maxDegree <- radialSetsData$maxDegree
@@ -159,7 +166,7 @@ buildRadialSetsPlot <- function(setSizes,
           setSizesVec[i] / 2,
           sets[j],
           setSizesVec[j] / 2,
-          lwd = (edgeWidth[i, j] / maxWidth) * maxLinkThickness,
+          lwd = edgeWidthMap[i, j],
           col = edgeColorMap[i, j],
           w = bezierW,
           h.ratio = bezierHRatio

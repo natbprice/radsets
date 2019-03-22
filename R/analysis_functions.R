@@ -292,12 +292,15 @@ getRadialSetsData <- function(setSizes,
                            setIntersections,
                            setOrder = NULL,
                            linkThickness = "prop",
-                           linkColor = "prop.RelError",
+                           linkColor = "prop.relError",
                            linkColorPal = "RdBu",
                            focusSets = "none",
                            countScale = 1,
                            colorScaleLim = c(-1, 1),
-                           reverseLinkPal = FALSE) {
+                           edgeWidthLim = NULL,
+                           reverseLinkPal = FALSE,
+                           maxPlotWidth = 15,
+                           minPlotWidth = 1) {
 
   # Reorder sets
   sets <- factor(levels(setIntersections[["set1"]]))
@@ -371,6 +374,18 @@ getRadialSetsData <- function(setSizes,
   # Remove self-links
   diag(edgeWidth) <- 0
 
+  # Map edge width to thickness
+  edgeWidthMap <- edgeWidth
+  if (length(edgeWidthLim) == 2) {
+    edgeWidthMap[edgeWidth < edgeWidthLim[1]] <- edgeWidthLim[1]
+    edgeWidthMap[edgeWidth > edgeWidthLim[2]] <- edgeWidthLim[2]
+  }
+
+  maxWidth <- max(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
+  minWidth <- min(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
+  edgeWidthMap <- (edgeWidthMap - minWidth) / (maxWidth - minWidth)
+  edgeWidthMap <- edgeWidthMap*(maxPlotWidth - minPlotWidth) + minPlotWidth
+
   # Define color palette
   n <- 100
   colorVec <- RColorBrewer::brewer.pal(8, linkColorPal)
@@ -399,6 +414,7 @@ getRadialSetsData <- function(setSizes,
   maxWidth <- signif(max(edgeWidth),1)
 
   return(list(edgeWidth = edgeWidth,
+              edgeWidthMap = edgeWidthMap,
               sets = sets,
               nSets = nSets,
               maxDegree = maxDegree,
