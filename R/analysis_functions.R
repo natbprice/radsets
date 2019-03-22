@@ -142,14 +142,14 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
 #' @return A data frame with variables:
 #' \itemize{
 #'  \item \code{set1} and \code{set2} indicating a pair of sets
-#'  \item \code{Nintersect} and \code{Nunion} indicating numer of elements in
+#'  \item \code{Ninter} and \code{Nunion} indicating numer of elements in
 #'  the intersection and union of the pair of sets
 #'  \item \code{N1} and \code{N2} indicating number of items in each set
 #'  \item \code{prop1} and \code{prop2} indicating the proportion of items in
 #'  each set that are also members of the other set
-#'   (\code{prop1 = Nintersect / N1})
+#'   (\code{prop1 = Ninter / N1})
 #'  \item \code{prop} indicating the proportion of items from either set that
-#'  are members of both sets (\code{prop = Nintersect / Nunion})
+#'  are members of both sets (\code{prop = Ninter / Nunion})
 #' }
 #'
 #' @examples
@@ -190,32 +190,64 @@ getSetIntersections <- function(df, setNames, idName) {
   # Nest set data
   nestedSets <-
     df %>%
+    # Total number of items
     mutate(Ntotal = n()) %>%
+    # Convert data to long form
     tidyr::gather(set, membership, !!!syms(setNames)) %>%
     filter(membership == 1) %>%
+    # Convert set to factor
     mutate(set = as.factor(set)) %>%
+    # Drop any extra variables
     select(set, Ntotal, !!sym(idName)) %>%
+    # Nest data by set
     tidyr::nest(-set, -Ntotal)
 
   # Calculate edge data
   edges <-
+    # Get all set combinations
     tibble(set1 = as.factor(setNames),
            set2 = as.factor(setNames)) %>%
     tidyr::expand(set1, set2) %>%
+    # Join items in each set
     left_join(nestedSets, by = c("set1" = "set")) %>%
     left_join(nestedSets %>% select(-Ntotal), by = c("set2" = "set")) %>%
-    mutate(setIntersection = map2(data.x, data.y, intersect),
-           setUnion = map2(data.x, data.y, union)) %>%
-    transmute(set1,
-              set2,
-              Ntotal,
-              Nintersect = map_dbl(setIntersection, nrow),
-              Nunion = map_dbl(setUnion, nrow)) %>%
+    # Perform intersections and unions between sets
+    mutate(
+      setIntersection = map2(data.x, data.y, intersect),
+      setUnion = map2(data.x, data.y, union)
+    ) %>%
+    # Count number of items in each intersection and union
+    transmute(
+      set1,
+      set2,
+      Ntotal,
+      Ninter = map_dbl(setIntersection, nrow),
+      Nunion = map_dbl(setUnion, nrow)
+    ) %>%
+    # Join set sizes
     left_join(setSizes %>% rename(N1 = N), by = c("set1" = "set")) %>%
     left_join(setSizes %>% rename(N2 = N), by = c("set2" = "set")) %>%
-    mutate(prop = Nintersect / Nunion,
-           prop1 = Nintersect / N1,
-           prop2 = Nintersect / N2) %>%
+    # Calculate percent overlap
+    mutate(prop = Ninter / Nunion,
+           prop1 = Ninter / N1,
+           prop2 = Ninter / N2) %>%
+    # Calculate difference in observed vs predicted set sizes
+    mutate(Ninter.pred = if_else(set1 != set2,
+                                 Ntotal*((N1 / Ntotal) * (N2 / Ntotal)),
+                                 N1),
+           Nunion.pred = if_else(set1 != set2,
+                                 Ntotal*((N1 / Ntotal) + (N2 / Ntotal) -
+                                           ((N1 / Ntotal) * (N2 / Ntotal))),
+                                 N1),
+           prop.pred = Ninter.pred / Nunion.pred,
+           prop1.pred = Ninter.pred / N1,
+           Ninter.error = Ninter - Ninter.pred,
+           prop.error = prop - prop.pred,
+           prop1.error = prop1 - prop1.pred,
+           Ninter.relError = Ninter.error / Ninter,
+           prop.relError = prop.error / prop,
+           prop1.relError = prop1.error / prop1
+    ) %>%
     mutate(set1 = as.factor(set1),
            set2 = as.factor(set2))
 
@@ -298,15 +330,9 @@ getRadialSetsData <- function(setSizes,
   if("none" %in% focusSet) {
     edgesDisProp <-
       setIntersections %>%
-      mutate(
-        pred = (N1 / Ntotal) * (N2 / Ntotal),
-        obs = Nintersect / Ntotal,
-        resid = obs - pred,
-        disProp = if_else(Nintersect == 0, 0, (Ntotal * resid) / Nintersect)
-      ) %>%
       arrange(set1, set2) %>%
-      select(set1, set2, disProp) %>%
-      spread(set2, disProp) %>%
+      select(set1, set2, prop.relError) %>%
+      spread(set2, prop.relError) %>%
       select(-set1) %>%
       as.matrix()
     rownames(edgesDisProp) <- sets
@@ -315,15 +341,9 @@ getRadialSetsData <- function(setSizes,
 
     edgesDisProp <-
       setIntersections %>%
-      mutate(
-        pred = N2 / Ntotal,
-        obs = prop1,
-        resid = obs - pred,
-        disProp = if_else(Nintersect == 0, 0, (N1 * resid) / Nintersect)
-      ) %>%
       arrange(set1, set2) %>%
-      select(set1, set2, disProp) %>%
-      spread(set2, disProp) %>%
+      select(set1, set2, prop1.relError) %>%
+      spread(set2, prop1.relError) %>%
       select(-set1) %>%
       as.matrix()
     rownames(edgesDisProp) <- sets
@@ -337,8 +357,8 @@ getRadialSetsData <- function(setSizes,
     edges <-
       setIntersections %>%
       arrange(set1, set2) %>%
-      select(set1, set2, Nintersect) %>%
-      spread(set2, Nintersect) %>%
+      select(set1, set2, Ninter) %>%
+      spread(set2, Ninter) %>%
       select(-set1) %>%
       as.matrix()
     rownames(edges) <- sets
