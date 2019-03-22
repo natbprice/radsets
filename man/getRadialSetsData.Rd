@@ -5,7 +5,8 @@
 \title{Prepare data for Radial Sets plot}
 \usage{
 getRadialSetsData(setSizes, setSizesByDegree, setIntersections,
-  linkThickness = "percent", focusSet = "none", countScale = 1)
+  setOrder = NULL, linkThickness = "percent", focusSet = "none",
+  countScale = 1, disPropLim = c(-1, 1))
 }
 \arguments{
 \item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
