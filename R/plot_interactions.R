@@ -15,7 +15,7 @@
 #' @importFrom tidyr unnest
 #'
 #' @export
-getRadialSetsMetadata <- function(networkData) {
+getRadialSetsMetadata <- function(networkData, bezierW = 1, bezierHRatio = 0.5) {
 
   # Unpack data
   edges <- networkData$edges
@@ -109,7 +109,9 @@ getRadialSetsMetadata <- function(networkData) {
         rou1 = r1,
         rou2 = r2
       ),
-      ~ circlize:::getQuadraticPoints(..1, ..2, ..3, ..4) %>% as_tibble()
+      ~ circlize:::getQuadraticPoints(..1, ..2, ..3, ..4,
+                                      w = bezierW,
+                                      h.ratio = bezierHRatio) %>% as_tibble()
     )) %>%
     tidyr::unnest() %>%
     rename(x = V1, y = V2) %>%
