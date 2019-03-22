@@ -190,11 +190,12 @@ getSetIntersections <- function(df, setNames, idName) {
   # Nest set data
   nestedSets <-
     df %>%
+    mutate(Ntotal = n()) %>%
     tidyr::gather(set, membership, !!!syms(setNames)) %>%
     filter(membership == 1) %>%
     mutate(set = as.factor(set)) %>%
-    select(set, !!sym(idName)) %>%
-    tidyr::nest(-set)
+    select(set, Ntotal, !!sym(idName)) %>%
+    tidyr::nest(-set, -Ntotal)
 
   # Calculate edge data
   edges <-
@@ -202,11 +203,12 @@ getSetIntersections <- function(df, setNames, idName) {
            set2 = as.factor(setNames)) %>%
     tidyr::expand(set1, set2) %>%
     left_join(nestedSets, by = c("set1" = "set")) %>%
-    left_join(nestedSets, by = c("set2" = "set")) %>%
+    left_join(nestedSets %>% select(-Ntotal), by = c("set2" = "set")) %>%
     mutate(setIntersection = map2(data.x, data.y, intersect),
            setUnion = map2(data.x, data.y, union)) %>%
     transmute(set1,
               set2,
+              Ntotal,
               Nintersect = map_dbl(setIntersection, nrow),
               Nunion = map_dbl(setUnion, nrow)) %>%
     left_join(setSizes %>% rename(N1 = N), by = c("set1" = "set")) %>%
@@ -239,21 +241,33 @@ getSetIntersections <- function(df, setNames, idName) {
 #'
 #' @import dplyr
 #' @importFrom tidyr spread
+#' @importFrom forcats fct_relevel
+#' @importFrom RColorBrewer brewer.pal
 #'
 #' @export
 getRadialSetsData <- function(setSizes,
                            setSizesByDegree,
                            setIntersections,
+                           setOrder = NULL,
                            linkThickness = "percent",
                            focusSet = "none",
-                           countScale = 1) {
+                           countScale = 1,
+                           disPropLim = c(-1, 1)) {
 
   if(!linkThickness %in% c("count", "percent")) {
     stop("Input 'linkThickness' should be 'count' or 'percent'")
   }
 
-  # Types of permits and stamps
-  sets <- levels(setSizes[["set"]])
+
+  sets <- factor(levels(setIntersections[["set1"]]))
+  if(!is.null(setOrder)) {
+    sets <- forcats::fct_relevel(sets, setOrder)
+    setIntersections <-
+      setIntersections %>%
+      mutate(set1 = factor(set1, levels = levels(sets)),
+             set2 = factor(set2, levels = levels(sets)))
+  }
+  sets <- sort(sets)
   nSets <- length(sets)
 
   # Maximum degree
@@ -262,6 +276,7 @@ getRadialSetsData <- function(setSizes,
   # Convert degree count to matrix
   degreeMat <-
     setSizesByDegree %>%
+    mutate(set = factor(set, levels = levels(sets))) %>%
     arrange(set) %>%
     select(set, degree, N) %>%
     mutate(N = N * countScale) %>%
@@ -273,9 +288,47 @@ getRadialSetsData <- function(setSizes,
 
   # Number of N with each type
   setSizesVec <- setSizes %>%
+    mutate(set = factor(set, levels = levels(sets))) %>%
+    mutate(N = N * countScale) %>%
     arrange(set) %>%
     pull(N)
   names(setSizesVec) <- sets
+
+  # Calculate disproportionality
+  if("none" %in% focusSet) {
+    edgesDisProp <-
+      setIntersections %>%
+      mutate(
+        pred = (N1 / Ntotal) * (N2 / Ntotal),
+        obs = Nintersect / Ntotal,
+        resid = obs - pred,
+        disProp = if_else(Nintersect == 0, 0, (Ntotal * resid) / Nintersect)
+      ) %>%
+      arrange(set1, set2) %>%
+      select(set1, set2, disProp) %>%
+      spread(set2, disProp) %>%
+      select(-set1) %>%
+      as.matrix()
+    rownames(edgesDisProp) <- sets
+    diag(edgesDisProp) <- 0
+  } else {
+
+    edgesDisProp <-
+      setIntersections %>%
+      mutate(
+        pred = N2 / Ntotal,
+        obs = prop1,
+        resid = obs - pred,
+        disProp = if_else(Nintersect == 0, 0, (N1 * resid) / Nintersect)
+      ) %>%
+      arrange(set1, set2) %>%
+      select(set1, set2, disProp) %>%
+      spread(set2, disProp) %>%
+      select(-set1) %>%
+      as.matrix()
+    rownames(edgesDisProp) <- sets
+    diag(edgesDisProp) <- 0
+  }
 
   # Edges matrix
   if(linkThickness != "percent") {
@@ -283,16 +336,17 @@ getRadialSetsData <- function(setSizes,
     # Calculate edges
     edges <-
       setIntersections %>%
-      arrange(set1) %>%
+      arrange(set1, set2) %>%
       select(set1, set2, Nintersect) %>%
       spread(set2, Nintersect) %>%
       select(-set1) %>%
       as.matrix()
     rownames(edges) <- sets
 
-    if(focusSet != "none") {
+    if(!"none" %in% focusSet) {
       # Remove all links besides focus group
-      edges[-which(sets == focusSet), ] <- 0
+      edges[-which(sets %in% focusSet), ] <- 0
+      edgesDisProp[-which(sets %in% focusSet), ] <- 0
     }
 
     # Scale edges by thousands
@@ -300,11 +354,11 @@ getRadialSetsData <- function(setSizes,
 
   } else if (linkThickness == "percent") {
 
-    if(focusSet == "none") {
+    if("none" %in% focusSet) {
 
       edges <-
         setIntersections %>%
-        arrange(set1) %>%
+        arrange(set1, set2) %>%
         select(set1, set2, prop) %>%
         spread(set2, prop) %>%
         select(-set1) %>%
@@ -315,7 +369,7 @@ getRadialSetsData <- function(setSizes,
 
       edges <-
         setIntersections %>%
-        arrange(set1) %>%
+        arrange(set1, set2) %>%
         select(set1, set2, prop1) %>%
         spread(set2, prop1) %>%
         select(-set1) %>%
@@ -323,7 +377,8 @@ getRadialSetsData <- function(setSizes,
       rownames(edges) <- sets
 
       # Remove all links besides focus group
-      edges[-which(sets == focusSet), ] <- 0
+      edges[-which(sets %in% focusSet), ] <- 0
+      edgesDisProp[-which(sets %in% focusSet), ] <- 0
     }
 
     # Scale edges to percent
@@ -332,6 +387,21 @@ getRadialSetsData <- function(setSizes,
 
   # Remove self-links
   diag(edges) <- 0
+
+  # Map disproportionality to colors
+  n <- 101
+  colorVec <- rev(add.alpha(RColorBrewer::brewer.pal(11, "RdBu"), 0.5))
+  colorPal <- c(colorRampPalette(c(colorVec[1], colorVec[6]))(51),
+            colorRampPalette(c(colorVec[6], colorVec[11]))(51)[-1])
+  scaleLimit <- ceiling(max(abs(range(edgesDisProp))) * 10) / 10
+  edgesDisPropColors <-
+    c(colorPal[as.integer(cut(edgesDisProp,
+                              breaks = c(-Inf,
+                                         seq(disPropLim[1],
+                                             disPropLim[2],
+                                             length.out = n-2),
+                                         Inf)))]) %>%
+    matrix(nrow = nrow(edges), ncol = ncol(edges))
 
   # Maximum edge width
   maxWidth <- signif(max(edges),1)
@@ -342,5 +412,7 @@ getRadialSetsData <- function(setSizes,
               maxDegree = maxDegree,
               degreeMat = degreeMat,
               setSizesVec = setSizesVec,
-              maxWidth = maxWidth))
+              maxWidth = maxWidth,
+              edgesDisProp = edgesDisProp,
+              edgesDisPropColors = edgesDisPropColors))
 }
