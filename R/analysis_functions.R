@@ -281,16 +281,15 @@ getRadialSetsData <- function(setSizes,
                            setSizesByDegree,
                            setIntersections,
                            setOrder = NULL,
-                           linkThickness = "percent",
-                           focusSet = "none",
+                           linkThickness = "prop",
+                           linkColor = "prop.RelError",
+                           linkColorPal = "RdBu",
+                           focusSets = "none",
                            countScale = 1,
-                           disPropLim = c(-1, 1)) {
+                           colorScaleLim = c(-1, 1),
+                           reverseLinkPal = FALSE) {
 
-  if(!linkThickness %in% c("count", "percent")) {
-    stop("Input 'linkThickness' should be 'count' or 'percent'")
-  }
-
-
+  # Reorder sets
   sets <- factor(levels(setIntersections[["set1"]]))
   if(!is.null(setOrder)) {
     sets <- forcats::fct_relevel(sets, setOrder)
@@ -326,127 +325,76 @@ getRadialSetsData <- function(setSizes,
     pull(N)
   names(setSizesVec) <- sets
 
-  # Calculate disproportionality
-  if("none" %in% focusSet) {
-    edgesDisProp <-
-      setIntersections %>%
-      arrange(set1, set2) %>%
-      select(set1, set2, prop.relError) %>%
-      spread(set2, prop.relError) %>%
-      select(-set1) %>%
-      as.matrix()
-    rownames(edgesDisProp) <- sets
-    diag(edgesDisProp) <- 0
-  } else {
-
-    edgesDisProp <-
-      setIntersections %>%
-      arrange(set1, set2) %>%
-      select(set1, set2, prop1.relError) %>%
-      spread(set2, prop1.relError) %>%
-      select(-set1) %>%
-      as.matrix()
-    rownames(edgesDisProp) <- sets
-    diag(edgesDisProp) <- 0
-  }
+  # Edge colors matrix
+  edgeColor <-
+    setIntersections %>%
+    arrange(set1, set2) %>%
+    select(set1, set2, linkColor) %>%
+    spread(set2, linkColor) %>%
+    select(-set1) %>%
+    as.matrix()
+  rownames(edgeColor) <- sets
+  diag(edgeColor) <- 0
 
   # Edges matrix
-  if(linkThickness != "percent") {
+  edgeWidth <-
+    setIntersections %>%
+    arrange(set1, set2) %>%
+    select(set1, set2, linkThickness) %>%
+    spread(set2, linkThickness) %>%
+    select(-set1) %>%
+    as.matrix()
+  rownames(edgeWidth) <- sets
 
-    # Calculate edges
-    edges <-
-      setIntersections %>%
-      arrange(set1, set2) %>%
-      select(set1, set2, Ninter) %>%
-      spread(set2, Ninter) %>%
-      select(-set1) %>%
-      as.matrix()
-    rownames(edges) <- sets
-
-    if(!"none" %in% focusSet) {
-      # Remove all links besides focus group
-      if(length(focusSet) == 1) {
-        edges[-which(sets %in% focusSet),] <- 0
-        edgesDisProp[-which(sets %in% focusSet),] <- 0
-      } else {
-        edges[-which(sets %in% focusSet), ] <- 0
-        edges[, -which(sets %in% focusSet)] <- 0
-        edgesDisProp[-which(sets %in% focusSet), ] <- 0
-        edgesDisProp[, -which(sets %in% focusSet)] <- 0
-      }
-    }
-
-    # Scale edges by thousands
-    edges = edges * countScale
-
-  } else if (linkThickness == "percent") {
-
-    if("none" %in% focusSet) {
-
-      edges <-
-        setIntersections %>%
-        arrange(set1, set2) %>%
-        select(set1, set2, prop) %>%
-        spread(set2, prop) %>%
-        select(-set1) %>%
-        as.matrix()
-      rownames(edges) <- sets
-
+  if(!"none" %in% focusSets) {
+    # Remove all links besides focus group
+    if(length(focusSets) == 1) {
+      edgeWidth[-which(sets %in% focusSets),] <- 0
+      edgeColor[-which(sets %in% focusSets),] <- 0
     } else {
-
-      edges <-
-        setIntersections %>%
-        arrange(set1, set2) %>%
-        select(set1, set2, prop1) %>%
-        spread(set2, prop1) %>%
-        select(-set1) %>%
-        as.matrix()
-      rownames(edges) <- sets
-
-      # Remove all links besides focus group
-      if(length(focusSet) == 1) {
-        edges[-which(sets %in% focusSet),] <- 0
-        edgesDisProp[-which(sets %in% focusSet),] <- 0
-      } else {
-        edges[-which(sets %in% focusSet), ] <- 0
-        edges[, -which(sets %in% focusSet)] <- 0
-        edgesDisProp[-which(sets %in% focusSet), ] <- 0
-        edgesDisProp[, -which(sets %in% focusSet)] <- 0
-      }
+      edgeWidth[-which(sets %in% focusSets), ] <- 0
+      edgeWidth[, -which(sets %in% focusSets)] <- 0
+      edgeColor[-which(sets %in% focusSets), ] <- 0
+      edgeColor[, -which(sets %in% focusSets)] <- 0
     }
+  }
+  # Remove self-links
+  diag(edgeWidth) <- 0
 
-    # Scale edges to percent
-    edges <- edges * 100
+  # Define color palette
+  n <- 100
+  colorVec <- RColorBrewer::brewer.pal(8, linkColorPal)
+  if(reverseLinkPal) {
+    colorVec = rev(colorVec)
+  }
+  linkPal <- colorRampPalette(colorVec)
+  if (length(colorScaleLim) == 2) {
+    scaleBreaks <- c(-Inf,
+                     seq(colorScaleLim[1],
+                         colorScaleLim[2],
+                         length.out = n - 2),
+                     Inf)
+  } else {
+    scaleBreaks = seq(min(edgeColor[!is.infinite(edgeColor)], na.rm = T),
+                      max(edgeColor[!is.infinite(edgeColor)], na.rm = T),
+                      length.out = n - 2)
   }
 
-  # Remove self-links
-  diag(edges) <- 0
-
-  # Map disproportionality to colors
-  n <- 101
-  colorVec <- rev(RColorBrewer::brewer.pal(11, "RdBu"))
-  colorPal <- c(colorRampPalette(c(colorVec[1], colorVec[6]))(51),
-            colorRampPalette(c(colorVec[6], colorVec[11]))(51)[-1])
-  scaleLimit <- ceiling(max(abs(range(edgesDisProp))) * 10) / 10
-  edgesDisPropColors <-
-    c(colorPal[as.integer(cut(edgesDisProp,
-                              breaks = c(-Inf,
-                                         seq(disPropLim[1],
-                                             disPropLim[2],
-                                             length.out = n-2),
-                                         Inf)))]) %>%
-    matrix(nrow = nrow(edges), ncol = ncol(edges))
+  # Map edge color values to colors
+  edgeColorMap <-
+    c(linkPal(n)[as.integer(cut(edgeColor, breaks = scaleBreaks))]) %>%
+    matrix(nrow = nrow(edgeWidth), ncol = ncol(edgeWidth))
 
   # Maximum edge width
-  maxWidth <- signif(max(edges),1)
+  maxWidth <- signif(max(edgeWidth),1)
 
-  return(list(edges = edges,
+  return(list(edgeWidth = edgeWidth,
               sets = sets,
               nSets = nSets,
               maxDegree = maxDegree,
               degreeMat = degreeMat,
               setSizesVec = setSizesVec,
               maxWidth = maxWidth,
-              edgesDisProp = edgesDisProp,
-              edgesDisPropColors = edgesDisPropColors))
+              edgeColor = edgeColor,
+              edgeColorMap = edgeColorMap))
 }

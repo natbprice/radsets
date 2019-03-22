@@ -8,8 +8,10 @@ buildRadialSetsPlot <- function(setSizes,
                                 setSizesByDegree,
                                 setIntersections,
                                 setOrder = NULL,
-                                linkThickness = "percent",
-                                focusSet = "none",
+                                linkThickness = "prop",
+                                linkColor = "prop.relError",
+                                linkColorPal = "RdBu",
+                                focusSets = "none",
                                 sectorLabelFontSize = 1,
                                 axisLabelFontSize = 1,
                                 maxLinkThickness = 15,
@@ -23,30 +25,34 @@ buildRadialSetsPlot <- function(setSizes,
                                 majorTick = FALSE,
                                 bezierW = 1,
                                 bezierHRatio = 0.75,
-                                disPropLim = c(-1,1),
-                                barColor = "darkgrey") {
+                                colorScaleLim = c(-1, 1),
+                                barColor = "darkgrey",
+                                reverseLinkPal = FALSE) {
 
 
 
   # Prepare plot data
-  networkData <- getRadialSetsData(setSizes,
+  radialSetsData <- getRadialSetsData(setSizes,
                                 setSizesByDegree,
                                 setIntersections,
                                 setOrder = setOrder,
+                                linkColor = linkColor,
+                                linkColorPal = linkColorPal,
                                 linkThickness = linkThickness,
-                                focusSet = focusSet,
+                                focusSets = focusSets,
                                 countScale = countScale,
-                                disPropLim = disPropLim)
+                                colorScaleLim = colorScaleLim,
+                                reverseLinkPal = reverseLinkPal)
 
   # Unpack data
-  edges <- networkData$edges
-  sets <- networkData$sets
-  nSets <- networkData$nSets
-  maxDegree <- networkData$maxDegree
-  degreeMat <- networkData$degreeMat
-  setSizesVec <- networkData$setSizesVec
-  maxWidth <- networkData$maxWidth
-  edgesDisPropColors <- networkData$edgesDisPropColors
+  edgeWidth <- radialSetsData$edgeWidth
+  sets <- radialSetsData$sets
+  nSets <- radialSetsData$nSets
+  maxDegree <- radialSetsData$maxDegree
+  degreeMat <- radialSetsData$degreeMat
+  setSizesVec <- radialSetsData$setSizesVec
+  maxWidth <- radialSetsData$maxWidth
+  edgeColorMap <- radialSetsData$edgeColorMap
 
   # Define color pallette
   if(length(barColor) == 1) {
@@ -145,7 +151,7 @@ buildRadialSetsPlot <- function(setSizes,
   # Draw links between sectors
   for (i in c(1:nSets)) {
     for (j in c(1:nSets)) {
-      if (edges[i, j] != 0) {
+      if (edgeWidth[i, j] != 0) {
 
         # Draw links
         circlize::circos.link(
@@ -153,8 +159,8 @@ buildRadialSetsPlot <- function(setSizes,
           setSizesVec[i] / 2,
           sets[j],
           setSizesVec[j] / 2,
-          lwd = (edges[i, j] / maxWidth) * maxLinkThickness,
-          col = edgesDisPropColors[i,j],
+          lwd = (edgeWidth[i, j] / maxWidth) * maxLinkThickness,
+          col = edgeColorMap[i, j],
           w = bezierW,
           h.ratio = bezierHRatio
         )
