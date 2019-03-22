@@ -4,46 +4,8 @@
 ### Overview
 
 The **radsets** package creates Radial Sets diagrams for visualizating
-overlapping sets.
-
-``` r
-# Load sample data
-data("movieSets")
-
-# Define set names (user specified)
-setNames <- movieSets %>%
-  select(Action:Western) %>%
-  colnames()
-
-# Define ID column (user specified)
-idName <- "movieId"
-
-# Define max degree (user specified)
-maxDegree <- 4
-
-# Calculate set sizes
-setSizes <-
-  getSetSizes(movieSets, setNames)
-
-# Calculate set sizes by degree
-setSizesByDegree <-
-  getSetSizesByDegree(movieSets, setNames, idName)
-
-# Calculate edge data
-setIntersections <-
-  getSetIntersections(movieSets, setNames, idName)
-
-buildRadialSetsPlot(
-  setSizes,
-  setSizesByDegree,
-  setIntersections,
-  setOrder = c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children", 
-               "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror", 
-               "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir", 
-               "Documentary"),
-  disPropLim = c(-1, 1)
-)
-```
+overlapping
+sets.
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="504pt" height="360pt" viewBox="0 0 504 360" version="1.1">
 
