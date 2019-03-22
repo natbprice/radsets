@@ -33,18 +33,33 @@ setIntersections <-
   getSetIntersections(movieSets, setNames, idName)
 
 radialSetsData <-
-  getRadialSetsData(setSizes, setSizesByDegree, setIntersections)
+  getRadialSetsData(setSizes,
+                    setSizesByDegree,
+                    setIntersections,
+                    focusSet = c("Action", "Drama"),
+                    setOrder = rev(levels(setSizes$set)))
 
-buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections)
+buildRadialSetsPlot(setSizes,
+                    setSizesByDegree,
+                    setIntersections,
+                    focusSet = c("Action", "Film-Noir"),
+                    setOrder = "Comedy")
 
 metadata <- getRadialSetsMetadata(radialSetsData)
+
+metadata$linkData %>%
+  mutate(dx = lead(x) - x,
+         dy = lead(y) - y,
+         ds = sqrt(dx^2 + dy^2)) %>%
+  group_by(set1, set2) %>%
+  summarize(s = sum(ds, na.rm = TRUE))
 
 
 # png("Plot3.png", width = 2100, height = 2100, units = 'px', res = 300)
 
-svg("PlotSVG.svg", width = 4, height = 4)
+svg("PlotSVG.svg", width = 12, height = 12)
 par(mar=rep(0,4))
-buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections, focusSet = "Sci-Fi")
+buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections)
 dev.off()
 
 png("PlotPng.png", width = 4*96, height = 4*96)
