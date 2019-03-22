@@ -14,7 +14,7 @@ local({
     x = paste(x, collapse = '.')
     if (!grepl('\\.svg', x)) return(hook_plot(x, options))
     # read the content of the svg image and write it out without <?xml ... ?>
-    paste0("(./", x, ")")
+    paste0('<img src= "./', x, '">')
   })
 })
 ```
@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 
 The **radsets** package creates Radial Sets diagrams for visualizating overlapping sets. 
 
-```{r, echo = FALSE, dev = 'svg'}
+```{r examplePlot, echo = FALSE, dev = 'svg', fig.width = 10, fig.height = 10}
 # Load sample data
 data("movieSets")
 
