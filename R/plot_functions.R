@@ -7,6 +7,7 @@
 buildRadialSetsPlot <- function(setSizes,
                                 setSizesByDegree,
                                 setIntersections,
+                                setOrder = NULL,
                                 linkThickness = "percent",
                                 focusSet = "none",
                                 sectorLabelFontSize = 1,
@@ -17,9 +18,13 @@ buildRadialSetsPlot <- function(setSizes,
                                 axisLabels = FALSE,
                                 legendTitle = NULL,
                                 showLegend = FALSE,
-                                sectorLineWidth = 2,
+                                sectorLineWidth = 1,
                                 sectorColor = "white",
-                                majorTick = FALSE) {
+                                majorTick = FALSE,
+                                bezierW = 1,
+                                bezierHRatio = 0.75,
+                                disPropLim = c(-1,1),
+                                barColor = "darkgrey") {
 
 
 
@@ -27,9 +32,11 @@ buildRadialSetsPlot <- function(setSizes,
   networkData <- getRadialSetsData(setSizes,
                                 setSizesByDegree,
                                 setIntersections,
+                                setOrder = setOrder,
                                 linkThickness = linkThickness,
                                 focusSet = focusSet,
-                                countScale = countScale)
+                                countScale = countScale,
+                                disPropLim = disPropLim)
 
   # Unpack data
   edges <- networkData$edges
@@ -39,9 +46,12 @@ buildRadialSetsPlot <- function(setSizes,
   degreeMat <- networkData$degreeMat
   setSizesVec <- networkData$setSizesVec
   maxWidth <- networkData$maxWidth
+  edgesDisPropColors <- networkData$edgesDisPropColors
 
   # Define color pallette
-  myColors <- randomcoloR::randomColor(nSets)
+  if(length(barColor) == 1) {
+    barColor <- rep(barColor, nSets)
+  }
 
   par(mar=rep(0,4))
 
@@ -101,7 +111,7 @@ buildRadialSetsPlot <- function(setSizes,
       i <- which(sets == sector.index)
 
       # Color for current sector
-      sectorColor <- myColors[i]
+      sectorColor <- barColor[i]
 
       # Loop over bars for each degree
       y1 <- maxDegree
@@ -132,12 +142,6 @@ buildRadialSetsPlot <- function(setSizes,
     }
   )
 
-  # Focus edges
-  linkColor <- "grey"
-  if(focusSet != "none"){
-    linkColor <- myColors[which(sets == focusSet)]
-  }
-
   # Draw links between sectors
   for (i in c(1:nSets)) {
     for (j in c(1:nSets)) {
@@ -150,7 +154,9 @@ buildRadialSetsPlot <- function(setSizes,
           sets[j],
           setSizesVec[j] / 2,
           lwd = (edges[i, j] / maxWidth) * maxLinkThickness,
-          col = linkColor
+          col = edgesDisPropColors[i,j],
+          w = bezierW,
+          h.ratio = bezierHRatio
         )
 
       }
