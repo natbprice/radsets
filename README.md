@@ -4,7 +4,6 @@
 ### Overview
 
 The **radsets** package creates Radial Sets diagrams for visualizating
-overlapping
-sets.
+overlapping sets.
 
-![Example Plot](./README-unnamed-chunk-2-1.svg)
+(./README-unnamed-chunk-2-1.svg)
