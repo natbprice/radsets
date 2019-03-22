@@ -264,12 +264,19 @@ getSetIntersections <- function(df, setNames, idName) {
 #' \code{\link{getSetSizesByDegree}}
 #' @param setIntersections Data frame of set intersection sizes from
 #' \code{\link{getSetIntersections}}
-#' @param linkThickness Character vector specifying if edge matrix should be
-#' a count or a proportion. Valid values are "percent" or "count"
-#' @param focusSet Character vector specifying a name of a set to focus on.
-#' Edges not connected to focus set are removed.
+#' @param linkThickness Character vector specifying name of variable from
+#' \code{setIntersections} data frame to map to link thickness
+#' @param linkColor Character vector specifying name of variable from
+#' \code{setIntersections} data frame to map to link color
+#' @param linkColorPal Name of color palette to use for link colors. Must match
+#' palette from \code{\link[RColorBrewer]{brewer.pal}}
+#' @param focusSets Character vector specifying name(s) of set(s) to focus on.
+#' If single set is specified, only links originating from set are shown. If
+#' multiple sets are specified, only links between sets are shown.
 #' @param countScale An optional input to apply multiplicative scaling to set
 #' sizes
+#' @param colorScaleLim An optional input to specify scale limits on link colors.
+#' Values outside limits are mapped to ends of color scale.
 #'
 #' @import dplyr
 #' @importFrom tidyr spread
