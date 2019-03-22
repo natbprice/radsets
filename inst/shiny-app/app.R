@@ -12,6 +12,7 @@ library(ggplot2)
 library(forcats)
 library(glue)
 library(stringr)
+library(tidyr)
 
 # Define UI ---------------------------------------------------------------
 ui <- fluidPage(
@@ -37,22 +38,42 @@ ui <- fluidPage(
                    multiple = FALSE,
                    selected = "percent"
                )
+        ),
+        column(3,
+               # Link scaling input
+               sliderInput(
+                 "bezierW",
+                 label = "Link shape:",
+                 min = 0,
+                 max = 1,
+                 value = 1
+               )
+        ),
+        column(3,
+               # Link scaling input
+               sliderInput(
+                 "bezierHRatio",
+                 label = "Link height ratio:",
+                 min = 0,
+                 max = 1,
+                 value = 0.75
+               )
         )
     )
     ),
     fluidRow(
-      column(8,
+      column(8, style='padding-right:0px;',
              div(
-               id = 'plotContainer',
+               id = 'bigPlotContainer',
              uiOutput("plotUI"))
              ),
       column(4,
              div(
-               id = 'plotContainer',
+               id = 'smallPlotContainer',
                uiOutput("ratingHistUI")
                ),
              div(
-               id = 'plotContainer',
+               id = 'smallPlotContainer',
              uiOutput("watchesHistUI")
              ))
     ),
@@ -147,7 +168,13 @@ server <- function(input, output, session) {
       setIntersections = summaryData()$setIntersections,
       focusSet = input$focusSet,
       linkThickness = input$linkThickness,
-      sectorLabelFontSize = 1.5
+      sectorLabelFontSize = 1.5,
+      bezierW = input$bezierW,
+      bezierHRatio = input$bezierHRatio
+      # setOrder = c("Musical", "Animation", "Children", "Fantasy", "Adventure",
+      #   "Action", "Horror", "Crime", "Thriller", "Sci-Fi", "War", "Mystery",
+      #   "Drama", "Romance", "Comedy", "Film-Noir", "Western", "IMAX",
+      #   "Documentary")
     )
     dev.off()
 
@@ -173,125 +200,73 @@ server <- function(input, output, session) {
 
   # Render rating histogram -----------------------------------------------
   output$ratingHist <- renderPlot({
-    # req(tableData())
 
-    # Freedman–Diaconis rule for histogram binwidth
-    FD_rule <- function(x) {
-      x <- x[!is.na(x)]
-      binwidth <- (2 * IQR(x)) / length(x) ^ (1 / 3)
-      return(binwidth)
-    }
-
-    df <- movieSets %>%
-      mutate(label = "all items")
-
-    if (isTruthy(input$plotClick)) {
-      clickData <- radialSetsClickActions(
-        setSizes = summaryData()$setSizes,
-        setSizesByDegree = summaryData()$setSizesByDegree,
-        setIntersections = summaryData()$setIntersections,
-        input$plotClick,
-        focusSet = input$focusSet,
-        linkThickness = input$linkThickness
+    plotData <-
+      movieSets %>%
+      mutate(label = "all items") %>%
+      full_join(
+        tableData() %>%
+          filter(selected) %>%
+          mutate(label = as.character(clickLabel())),
+        by = c("title", "year",
+               "avgRating", "nRating", "label")
       )
 
-      plotTitle <- NULL
-      if (clickData$clickSection) {
-        plotTitle <- clickData$name
-
-      } else if (clickData$clickLink) {
-        plotTitle <- glue("{clickData$name1} and {clickData$name2}")
-      }
-
-      if (clickData$clickBar) {
-        plotTitle <- glue("{clickData$name} (degree {clickData$degree})")
-      }
-
-      plotTitle <- as.character(plotTitle)
-
-      df <- df %>%
-        full_join(
-          tableData() %>% mutate(label = plotTitle),
-          by = c("title", "year",
-                 "avgRating", "nRating", "label")
-        )
-    }
-
-    ggplot(data = df,
+    ggplot(data = plotData %>% drop_na(avgRating),
            aes(x = avgRating,
                fill = fct_relevel(label, "all items"))) +
       geom_density(alpha = 0.5) +
-      # scale_y_continuous(expand = expand_scale(mult = c(0, 0.025))) +
+      scale_y_continuous(expand = expand_scale(mult = c(0, 0.025))) +
       # scale_x_continuous(limits = c(0.5, 5.5),
       #                    expand = expand_scale(mult = c(0, 0))) +
-      theme_light(base_size = 18) +
-      labs(title = glue("Average Rating"),
+      theme_minimal(base_size = 18) +
+      labs(title = "Average Rating",
+           x = "Average Rating",
+           y = NULL,
            fill = NULL) +
       theme(legend.position = "bottom",
-            aspect.ratio = 1 / 2)
+            aspect.ratio = 1 / 2,
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank())
 
   }, bg = "transparent")
 
   # Render watches histogram -----------------------------------------------
   output$watchesHist <- renderPlot({
-    # req(tableData())
 
-    # Freedman–Diaconis rule for histogram binwidth
-    FD_rule <- function(x) {
-      x <- x[!is.na(x)]
-      binwidth <- (2 * IQR(x)) / length(x) ^ (1 / 3)
-      return(binwidth)
-    }
-
-    df <- movieSets %>%
-      mutate(label = "all items")
-
-    if (isTruthy(input$plotClick)) {
-      clickData <- radialSetsClickActions(
-        setSizes = summaryData()$setSizes,
-        setSizesByDegree = summaryData()$setSizesByDegree,
-        setIntersections = summaryData()$setIntersections,
-        input$plotClick,
-        focusSet = input$focusSet,
-        linkThickness = input$linkThickness
+    plotData <-
+      movieSets %>%
+      mutate(label = "all items") %>%
+      full_join(
+        tableData() %>%
+          filter(selected) %>%
+          mutate(label = as.character(clickLabel())),
+        by = c("title", "year",
+               "avgRating", "nRating", "label")
       )
 
-      plotTitle <- NULL
-      if (clickData$clickSection) {
-        plotTitle <- clickData$name
-
-      } else if (clickData$clickLink) {
-        plotTitle <- glue("{clickData$name1} and {clickData$name2}")
-      }
-
-      if (clickData$clickBar) {
-        plotTitle <- glue("{clickData$name} (degree {clickData$degree})")
-      }
-
-      plotTitle <- as.character(plotTitle)
-
-      df <- df %>%
-        full_join(
-          tableData() %>% mutate(label = plotTitle),
-          by = c("title", "year",
-                 "avgRating", "nRating", "label")
-        )
-    }
-
-    ggplot(data = df,
+    ggplot(data = plotData %>% drop_na(nRating),
            aes(
              x = log10(nRating + 1),
              fill = fct_relevel(label, "all items")
            )) +
       geom_density(alpha = 0.5) +
-      # scale_y_continuous(expand = expand_scale(mult = c(0, 0.025))) +
+      scale_y_continuous(expand = expand_scale(mult = c(0, 0.025))) +
       # scale_x_continuous(limits = c(0.5, 5.5),
       #                    expand = expand_scale(mult = c(0, 0))) +
-      theme_light(base_size = 18) +
+      theme_minimal(base_size = 18) +
       labs(title = "Number of Ratings",
+           x = "log10(Number of Ratings + 1)",
+           y = NULL,
            fill = NULL) +
       theme(legend.position = "bottom",
-            aspect.ratio = 1 / 2)
+            aspect.ratio = 1 / 2,
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank())
 
   }, bg = "transparent")
 
@@ -309,19 +284,23 @@ server <- function(input, output, session) {
       linkThickness = input$linkThickness
     )
 
-    getRadialSetsMetadata(networkData)
+    getRadialSetsMetadata(networkData,
+                          bezierW = input$bezierW,
+                          bezierHRatio = input$bezierHRatio)
 
   })
 
   # Plot tooltip ----------------------------------------------------------
   output$hover_info <- renderUI({
     # Ensure hover input is available
-    req(metadata())
+    req(metadata(), input$plot_hover)
 
+    # Get pointer location
     hoverLoc <- getPointerLoc(metadata(),
                               input$plot_hover,
                               transCoord = T)
 
+    # Create tooltip
     createRadialsetsTooltip(
       setSizes = summaryData()$setSizes,
       setSizesByDegree = summaryData()$setSizesByDegree,
@@ -330,56 +309,88 @@ server <- function(input, output, session) {
       focusSet = input$focusSet,
       linkThickness = input$linkThickness
     )
-
-    # pointer <- input$plot_hover
-    # browser()
-    # print(glue("coord: {round(hoverLoc$x*100)/100}, {round(hoverLoc$y*100)/100}"))
   })
 
 
   # Plot click actions ----------------------------------------------------
   observeEvent(input$plotDblClick, {
-    req(metadata())
+    req(dblClickLoc())
 
-    dblClickLoc <- getPointerLoc(metadata(), input$plotDblClick)
-
-    if (dblClickLoc$location == "sector") {
+    if (dblClickLoc()$location == "sector") {
       # Set x-variable input to monthYear
       updateSelectizeInput(session = session,
                            inputId = "focusSet",
-                           selected = dblClickLoc$set)
+                           selected = dblClickLoc()$set)
 
     }
 
 
   })
 
-  # Plot click actions ----------------------------------------------------
-  tableData <- eventReactive(input$plotClick, {
+
+  # Click location --------------------------------------------------------
+  clickLoc <- reactive({
     req(metadata())
 
-    clickLoc <- getPointerLoc(metadata(), input$plotClick)
+    getPointerLoc(metadata(), input$plotClick, transCoord = T)
+  })
+  dblClickLoc <- reactive({
+    req(metadata())
 
-    if (is.null(clickLoc$location)) {
-      return(NULL)
+    getPointerLoc(metadata(), input$plotDblClick, transCoord = T)
+  })
+
+
+  # Click label -----------------------------------------------------------
+  clickLabel <- reactive({
+    label <- ""
+    if (!is.null(clickLoc())) {
+      if (is.null(clickLoc()$location)) {
+        label = ""
+      } else if (clickLoc()$location == "sector") {
+        label <- clickLoc()$set
+      } else if (clickLoc()$location == "bar") {
+        label <- glue("{clickLoc()$set} (degree {clickLoc()$degree})")
+      } else if (clickLoc()$location == "link") {
+        label <- glue("{clickLoc()$set1} and {clickLoc()$set2}")
+      }
     }
+
+    return(label)
+  })
+
+
+
+  # Plot click actions ----------------------------------------------------
+  tableData <- reactive({
+
+    # req(clickLoc())
 
     # Define set names
     setNames <- movieSets %>%
       select(Action:Western) %>%
       colnames()
 
-    df <- movieSets
-    if (clickLoc$location %in% c("sector", "bar")) {
-      df <- df %>%
-        filter(!!sym(clickLoc$set) == 1)
+    selectedItems <- movieSets %>%
+      mutate(degree = str_count(genres, "\\|") + 1) %>%
+      mutate(selected = FALSE)
+    if (!is.null(clickLoc()$location)) {
 
-    } else if (clickLoc$location == "link") {
-      df <- df %>%
-        filter(!!sym(clickLoc$set1) == 1,!!sym(clickLoc$set2) == 1)
+      if (clickLoc()$location == "sector") {
+        selectedItems <- selectedItems %>%
+          mutate(selected = (!!sym(clickLoc()$set) == 1))
+      } else if (clickLoc()$location == "bar") {
+        selectedItems <- selectedItems %>%
+          mutate(selected = (!!sym(clickLoc()$set) == 1) &
+                   (degree == clickLoc()$degree))
+      } else if (clickLoc()$location == "link") {
+        selectedItems <- selectedItems %>%
+          mutate(selected = (!!sym(clickLoc()$set1) == 1) &
+                   (!!sym(clickLoc()$set2) == 1))
+      }
     }
 
-    df <- df %>%
+    selectedItems <- selectedItems %>%
       select(movieId,
              title,
              year,
@@ -387,8 +398,9 @@ server <- function(input, output, session) {
              avgRating,
              nRating,
              imdbId,
-             tmdbId) %>%
-      mutate(degree = str_count(genres, "\\|") + 1) %>%
+             tmdbId,
+             degree,
+             selected) %>%
       mutate(
         imdbId = glue(
           "<a href='http://www.imdb.com/title/tt{imdbId}' target='_blank'>{imdbId}</a>"
@@ -401,12 +413,7 @@ server <- function(input, output, session) {
         )
       )
 
-    if (clickLoc$location == "bar") {
-      df <- df %>%
-        filter(degree == clickLoc$degree)
-    }
-
-    return(df)
+    return(selectedItems)
 
 
   })
@@ -414,6 +421,8 @@ server <- function(input, output, session) {
   # Render data table -----------------------------------------------------
   output$selectedTable <- renderDataTable(
     tableData() %>%
+      filter(selected) %>%
+      select(-selected) %>%
       mutate(avgRating = round(avgRating *
                                  10) / 10) %>%
       rename(
