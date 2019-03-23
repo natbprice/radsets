@@ -113,6 +113,15 @@ server <- function(input, output, session) {
     )
   })
 
+
+  # Set order -------------------------------------------------------------
+  setOrder <- reactive({
+    c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children",
+      "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror",
+      "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir",
+      "Documentary")
+  })
+
   # Summarize data --------------------------------------------------------
   summaryData <- reactive({
     data(movieSets)
@@ -171,11 +180,9 @@ server <- function(input, output, session) {
       linkThickness = input$linkThickness,
       sectorLabelFontSize = 1,
       bezierW = input$bezierW,
-      bezierHRatio = input$bezierHRatio
-      # setOrder = c("Musical", "Animation", "Children", "Fantasy", "Adventure",
-      #   "Action", "Horror", "Crime", "Thriller", "Sci-Fi", "War", "Mystery",
-      #   "Drama", "Romance", "Comedy", "Film-Noir", "Western", "IMAX",
-      #   "Documentary")
+      bezierHRatio = input$bezierHRatio,
+      setOrder = setOrder(),
+      reverseLinkPal = TRUE
     )
     dev.off()
 
@@ -193,7 +200,8 @@ server <- function(input, output, session) {
       setIntersections = summaryData()$setIntersections,
       focusSet = input$focusSet,
       linkThickness = input$linkThickness,
-      sectorLabelFontSize = 1.5
+      sectorLabelFontSize = 1.5,
+      setOrder = setOrder()
     )
   }, bg = "transparent", execOnResize = TRUE)
 
@@ -277,15 +285,19 @@ server <- function(input, output, session) {
     # Ensure input is available
     req(summaryData(), input$focusSet, input$linkThickness)
 
-    networkData <- getRadialSetsData(
+    # Wait for plot
+    req(get.all.sector.index())
+
+    radialSetsData <- getRadialSetsData(
       setSizes = summaryData()$setSizes,
       setSizesByDegree = summaryData()$setSizesByDegree,
       setIntersections = summaryData()$setIntersections,
       focusSet = input$focusSet,
-      linkThickness = input$linkThickness
+      linkThickness = input$linkThickness,
+      setOrder = setOrder()
     )
 
-    getRadialSetsMetadata(networkData,
+    getRadialSetsMetadata(radialSetsData,
                           bezierW = input$bezierW,
                           bezierHRatio = input$bezierHRatio)
 

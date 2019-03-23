@@ -55,12 +55,12 @@ getRadialSetsMetadata <- function(radialSetsData, bezierW = 1, bezierHRatio = 0.
     ) %>%
     tidyr::unnest() %>%
     mutate(theta1 = if_else(theta1 == 0, 360, theta1),
-           set = as.factor(set))
+           set = factor(set, levels = levels(sets)))
 
   # Bar data --------------------------------------------------------------
   barData <-
     as_tibble(degreeMat) %>%
-    mutate(set = as.factor(rownames(degreeMat))) %>%
+    mutate(set = factor(rownames(degreeMat), levels = levels(sets))) %>%
     gather(degree, s, -set) %>%
     mutate(degree = as.numeric(degree)) %>%
     left_join(sectorData %>%
@@ -85,8 +85,9 @@ getRadialSetsMetadata <- function(radialSetsData, bezierW = 1, bezierHRatio = 0.
 
   # Link data -------------------------------------------------------------
   linkData <- as_tibble(edgeWidth) %>%
-    mutate(set1 = rownames(edgeWidth)) %>%
+    mutate(set1 = factor(rownames(edgeWidth), levels = levels(sets))) %>%
     gather(set2, edge, -set1) %>%
+    mutate(set2 = factor(set2, levels = levels(sets))) %>%
     mutate_all(as.factor) %>%
     filter(edge != 0) %>%
     select(set1, set2) %>%
@@ -144,9 +145,6 @@ getPointerLoc <- function(metadata,
                           plotDomain = list(left = -1.08, right = 1.08,
                                             bottom = -1.08, top = 1.08),
                           transCoord = FALSE) {
-
-  # names(plotDomain) <- c("left", "right", "bottom", "top")
-  # plotDomain <- as.list(plotDomain)
 
   # Define pointer location
   pointerLoc <- list(location = NULL,
