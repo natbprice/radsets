@@ -4,8 +4,6 @@
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
-#' @importFrom tidyr nest gather expand
-#' @importFrom purrr map2 map_dbl
 #'
 #' @export
 optimizeLinkOrder <- function(setSizes,

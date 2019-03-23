@@ -12,7 +12,8 @@ buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections,
   axisLabels = FALSE, legendTitle = NULL, showLegend = FALSE,
   sectorLineWidth = 1, sectorColor = "white", majorTick = FALSE,
   bezierW = 1, bezierHRatio = 0.75, colorScaleLim = c(-1, 1),
-  barColor = "darkgrey", reverseLinkPal = FALSE)
+  edgeWidthLim = NULL, barColor = "darkgrey", reverseLinkPal = FALSE,
+  maxPlotWidth = 5, minPlotWidth = 1)
 }
 \description{
 Build radial sets plot

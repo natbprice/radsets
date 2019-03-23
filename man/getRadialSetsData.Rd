@@ -6,9 +6,10 @@
 \usage{
 getRadialSetsData(setSizes, setSizesByDegree, setIntersections,
   setOrder = NULL, linkThickness = "prop",
-  linkColor = "prop.RelError", linkColorPal = "RdBu",
+  linkColor = "prop.relError", linkColorPal = "RdBu",
   focusSets = "none", countScale = 1, colorScaleLim = c(-1, 1),
-  reverseLinkPal = FALSE)
+  edgeWidthLim = NULL, reverseLinkPal = FALSE, maxPlotWidth = 15,
+  minPlotWidth = 1)
 }
 \arguments{
 \item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}

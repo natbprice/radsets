@@ -4,7 +4,7 @@
 \alias{getRadialSetsMetadata}
 \title{Get Radial Sets metadata}
 \usage{
-getRadialSetsMetadata(networkData, bezierW = 1, bezierHRatio = 0.5)
+getRadialSetsMetadata(radialSetsData, bezierW = 1, bezierHRatio = 0.5)
 }
 \arguments{
 \item{plotData}{A data frame with data used in plot}
