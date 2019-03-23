@@ -15,16 +15,16 @@
 #' @importFrom tidyr unnest
 #'
 #' @export
-getRadialSetsMetadata <- function(networkData, bezierW = 1, bezierHRatio = 0.5) {
+getRadialSetsMetadata <- function(radialSetsData, bezierW = 1, bezierHRatio = 0.5) {
 
   # Unpack data
-  edges <- networkData$edges
-  sets <- networkData$sets
-  nSets <- networkData$nSets
-  maxDegree <- networkData$maxDegree
-  degreeMat <- networkData$degreeMat
-  setSizesVec <- networkData$setSizesVec
-  maxWidth <- networkData$maxWidth
+  edgeWidth <- radialSetsData$edgeWidth
+  sets <- radialSetsData$sets
+  nSets <- radialSetsData$nSets
+  maxDegree <- radialSetsData$maxDegree
+  degreeMat <- radialSetsData$degreeMat
+  setSizesVec <- radialSetsData$setSizesVec
+  maxWidth <- radialSetsData$maxWidth
 
 
   # Sector data -----------------------------------------------------------
@@ -84,8 +84,8 @@ getRadialSetsMetadata <- function(networkData, bezierW = 1, bezierHRatio = 0.5) 
     select(set, degree, theta1, theta2, r1, r2, s1, s2)
 
   # Link data -------------------------------------------------------------
-  linkData <- as_tibble(edges) %>%
-    mutate(set1 = rownames(edges)) %>%
+  linkData <- as_tibble(edgeWidth) %>%
+    mutate(set1 = rownames(edgeWidth)) %>%
     gather(set2, edge, -set1) %>%
     mutate_all(as.factor) %>%
     filter(edge != 0) %>%
@@ -282,7 +282,7 @@ createRadialsetsTooltip <- function(setSizes,
 
   # Edges matrix
   if(linkThickness != "percent") {
-    edgeName <- "Nintersect"
+    edgeName <- "Ninter"
   } else if (linkThickness == "percent") {
     if(focusSet == "none") {
       edgeName <- "prop"

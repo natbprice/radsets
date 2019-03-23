@@ -70,7 +70,10 @@ buildRadialSetsPlot(
                "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror", 
                "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir", 
                "Documentary"),
-  disPropLim = c(-1, 1)
+  colorScaleLim = c(-1, 1),
+  maxPlotWidth = 10,
+  linkColorPal = "RdBu",
+  reverseLinkPal = "TRUE"
 )
 ```
 

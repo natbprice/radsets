@@ -5,8 +5,11 @@
 \title{Prepare data for Radial Sets plot}
 \usage{
 getRadialSetsData(setSizes, setSizesByDegree, setIntersections,
-  setOrder = NULL, linkThickness = "percent", focusSet = "none",
-  countScale = 1, disPropLim = c(-1, 1))
+  setOrder = NULL, linkThickness = "prop",
+  linkColor = "prop.relError", linkColorPal = "RdBu",
+  focusSets = "none", countScale = 1, colorScaleLim = c(-1, 1),
+  edgeWidthLim = NULL, reverseLinkPal = FALSE, maxPlotWidth = 15,
+  minPlotWidth = 1)
 }
 \arguments{
 \item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
@@ -17,14 +20,24 @@ getRadialSetsData(setSizes, setSizesByDegree, setIntersections,
 \item{setIntersections}{Data frame of set intersection sizes from
 \code{\link{getSetIntersections}}}
 
-\item{linkThickness}{Character vector specifying if edge matrix should be
-a count or a proportion. Valid values are "percent" or "count"}
+\item{linkThickness}{Character vector specifying name of variable from
+\code{setIntersections} data frame to map to link thickness}
 
-\item{focusSet}{Character vector specifying a name of a set to focus on.
-Edges not connected to focus set are removed.}
+\item{linkColor}{Character vector specifying name of variable from
+\code{setIntersections} data frame to map to link color}
+
+\item{linkColorPal}{Name of color palette to use for link colors. Must match
+palette from \code{\link[RColorBrewer]{brewer.pal}}}
+
+\item{focusSets}{Character vector specifying name(s) of set(s) to focus on.
+If single set is specified, only links originating from set are shown. If
+multiple sets are specified, only links between sets are shown.}
 
 \item{countScale}{An optional input to apply multiplicative scaling to set
 sizes}
+
+\item{colorScaleLim}{An optional input to specify scale limits on link colors.
+Values outside limits are mapped to ends of color scale.}
 }
 \description{
 Create a list with data needed by \code{\link{buildRadialSetsPlot}}.

@@ -5,12 +5,15 @@
 \title{Build radial sets plot}
 \usage{
 buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections,
-  setOrder = NULL, linkThickness = "percent", focusSet = "none",
-  sectorLabelFontSize = 1, axisLabelFontSize = 1,
+  setOrder = NULL, linkThickness = "prop",
+  linkColor = "prop.relError", linkColorPal = "RdBu",
+  focusSets = "none", sectorLabelFontSize = 1, axisLabelFontSize = 1,
   maxLinkThickness = 15, countScale = 1, facing = "clockwise",
   axisLabels = FALSE, legendTitle = NULL, showLegend = FALSE,
   sectorLineWidth = 1, sectorColor = "white", majorTick = FALSE,
-  bezierW = 1, bezierHRatio = 0.75, disPropLim = c(-1, 1))
+  bezierW = 1, bezierHRatio = 0.75, colorScaleLim = c(-1, 1),
+  edgeWidthLim = NULL, barColor = "darkgrey", reverseLinkPal = FALSE,
+  maxPlotWidth = 5, minPlotWidth = 1)
 }
 \description{
 Build radial sets plot

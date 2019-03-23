@@ -141,15 +141,18 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
 #' @param idName A string specifying name of ID variable for each item
 #' @return A data frame with variables:
 #' \itemize{
-#'  \item \code{set1} and \code{set2} indicating a pair of sets
-#'  \item \code{Nintersect} and \code{Nunion} indicating numer of elements in
+#'  \item \code{set1} and \code{set2} pair of sets
+#'  \item \code{Ninter} and \code{Nunion} number of elements in
 #'  the intersection and union of the pair of sets
-#'  \item \code{N1} and \code{N2} indicating number of items in each set
-#'  \item \code{prop1} and \code{prop2} indicating the proportion of items in
+#'  \item \code{N1} and \code{N2} number of items in each set
+#'  \item \code{prop1} and \code{prop2} proportion of items in
 #'  each set that are also members of the other set
-#'   (\code{prop1 = Nintersect / N1})
-#'  \item \code{prop} indicating the proportion of items from either set that
-#'  are members of both sets (\code{prop = Nintersect / Nunion})
+#'   (\code{prop1 = Ninter / N1})
+#'  \item \code{prop} proportion of items from either set that
+#'  are members of both sets (\code{prop = Ninter / Nunion})
+#'  \item \code{.pred} predictions assuming marginal independence of sets
+#'  \item \code{.error} difference between predictions and observations
+#'  \item \code{.relError} error relative to observations
 #' }
 #'
 #' @examples
@@ -190,32 +193,64 @@ getSetIntersections <- function(df, setNames, idName) {
   # Nest set data
   nestedSets <-
     df %>%
+    # Total number of items
     mutate(Ntotal = n()) %>%
+    # Convert data to long form
     tidyr::gather(set, membership, !!!syms(setNames)) %>%
     filter(membership == 1) %>%
+    # Convert set to factor
     mutate(set = as.factor(set)) %>%
+    # Drop any extra variables
     select(set, Ntotal, !!sym(idName)) %>%
+    # Nest data by set
     tidyr::nest(-set, -Ntotal)
 
   # Calculate edge data
   edges <-
+    # Get all set combinations
     tibble(set1 = as.factor(setNames),
            set2 = as.factor(setNames)) %>%
     tidyr::expand(set1, set2) %>%
+    # Join items in each set
     left_join(nestedSets, by = c("set1" = "set")) %>%
     left_join(nestedSets %>% select(-Ntotal), by = c("set2" = "set")) %>%
-    mutate(setIntersection = map2(data.x, data.y, intersect),
-           setUnion = map2(data.x, data.y, union)) %>%
-    transmute(set1,
-              set2,
-              Ntotal,
-              Nintersect = map_dbl(setIntersection, nrow),
-              Nunion = map_dbl(setUnion, nrow)) %>%
+    # Perform intersections and unions between sets
+    mutate(
+      setIntersection = map2(data.x, data.y, intersect),
+      setUnion = map2(data.x, data.y, union)
+    ) %>%
+    # Count number of items in each intersection and union
+    transmute(
+      set1,
+      set2,
+      Ntotal,
+      Ninter = map_dbl(setIntersection, nrow),
+      Nunion = map_dbl(setUnion, nrow)
+    ) %>%
+    # Join set sizes
     left_join(setSizes %>% rename(N1 = N), by = c("set1" = "set")) %>%
     left_join(setSizes %>% rename(N2 = N), by = c("set2" = "set")) %>%
-    mutate(prop = Nintersect / Nunion,
-           prop1 = Nintersect / N1,
-           prop2 = Nintersect / N2) %>%
+    # Calculate percent overlap
+    mutate(prop = Ninter / Nunion,
+           prop1 = Ninter / N1,
+           prop2 = Ninter / N2) %>%
+    # Calculate difference in observed vs predicted set sizes
+    mutate(Ninter.pred = if_else(set1 != set2,
+                                 Ntotal*((N1 / Ntotal) * (N2 / Ntotal)),
+                                 N1),
+           Nunion.pred = if_else(set1 != set2,
+                                 Ntotal*((N1 / Ntotal) + (N2 / Ntotal) -
+                                           ((N1 / Ntotal) * (N2 / Ntotal))),
+                                 N1),
+           prop.pred = Ninter.pred / Nunion.pred,
+           prop1.pred = Ninter.pred / N1,
+           Ninter.error = Ninter - Ninter.pred,
+           prop.error = prop - prop.pred,
+           prop1.error = prop1 - prop1.pred,
+           Ninter.relError = Ninter.error / Ninter,
+           prop.relError = prop.error / prop,
+           prop1.relError = prop1.error / prop1
+    ) %>%
     mutate(set1 = as.factor(set1),
            set2 = as.factor(set2))
 
@@ -232,12 +267,19 @@ getSetIntersections <- function(df, setNames, idName) {
 #' \code{\link{getSetSizesByDegree}}
 #' @param setIntersections Data frame of set intersection sizes from
 #' \code{\link{getSetIntersections}}
-#' @param linkThickness Character vector specifying if edge matrix should be
-#' a count or a proportion. Valid values are "percent" or "count"
-#' @param focusSet Character vector specifying a name of a set to focus on.
-#' Edges not connected to focus set are removed.
+#' @param linkThickness Character vector specifying name of variable from
+#' \code{setIntersections} data frame to map to link thickness
+#' @param linkColor Character vector specifying name of variable from
+#' \code{setIntersections} data frame to map to link color
+#' @param linkColorPal Name of color palette to use for link colors. Must match
+#' palette from \code{\link[RColorBrewer]{brewer.pal}}
+#' @param focusSets Character vector specifying name(s) of set(s) to focus on.
+#' If single set is specified, only links originating from set are shown. If
+#' multiple sets are specified, only links between sets are shown.
 #' @param countScale An optional input to apply multiplicative scaling to set
 #' sizes
+#' @param colorScaleLim An optional input to specify scale limits on link colors.
+#' Values outside limits are mapped to ends of color scale.
 #'
 #' @import dplyr
 #' @importFrom tidyr spread
@@ -249,16 +291,18 @@ getRadialSetsData <- function(setSizes,
                            setSizesByDegree,
                            setIntersections,
                            setOrder = NULL,
-                           linkThickness = "percent",
-                           focusSet = "none",
+                           linkThickness = "prop",
+                           linkColor = "prop.relError",
+                           linkColorPal = "RdBu",
+                           focusSets = "none",
                            countScale = 1,
-                           disPropLim = c(-1, 1)) {
+                           colorScaleLim = c(-1, 1),
+                           edgeWidthLim = NULL,
+                           reverseLinkPal = FALSE,
+                           maxPlotWidth = 15,
+                           minPlotWidth = 1) {
 
-  if(!linkThickness %in% c("count", "percent")) {
-    stop("Input 'linkThickness' should be 'count' or 'percent'")
-  }
-
-
+  # Reorder sets
   sets <- factor(levels(setIntersections[["set1"]]))
   if(!is.null(setOrder)) {
     sets <- forcats::fct_relevel(sets, setOrder)
@@ -294,139 +338,89 @@ getRadialSetsData <- function(setSizes,
     pull(N)
   names(setSizesVec) <- sets
 
-  # Calculate disproportionality
-  if("none" %in% focusSet) {
-    edgesDisProp <-
-      setIntersections %>%
-      mutate(
-        pred = (N1 / Ntotal) * (N2 / Ntotal),
-        obs = Nintersect / Ntotal,
-        resid = obs - pred,
-        disProp = if_else(Nintersect == 0, 0, (Ntotal * resid) / Nintersect)
-      ) %>%
-      arrange(set1, set2) %>%
-      select(set1, set2, disProp) %>%
-      spread(set2, disProp) %>%
-      select(-set1) %>%
-      as.matrix()
-    rownames(edgesDisProp) <- sets
-    diag(edgesDisProp) <- 0
-  } else {
-
-    edgesDisProp <-
-      setIntersections %>%
-      mutate(
-        pred = N2 / Ntotal,
-        obs = prop1,
-        resid = obs - pred,
-        disProp = if_else(Nintersect == 0, 0, (N1 * resid) / Nintersect)
-      ) %>%
-      arrange(set1, set2) %>%
-      select(set1, set2, disProp) %>%
-      spread(set2, disProp) %>%
-      select(-set1) %>%
-      as.matrix()
-    rownames(edgesDisProp) <- sets
-    diag(edgesDisProp) <- 0
-  }
+  # Edge colors matrix
+  edgeColor <-
+    setIntersections %>%
+    arrange(set1, set2) %>%
+    select(set1, set2, linkColor) %>%
+    spread(set2, linkColor) %>%
+    select(-set1) %>%
+    as.matrix()
+  rownames(edgeColor) <- sets
+  diag(edgeColor) <- 0
 
   # Edges matrix
-  if(linkThickness != "percent") {
+  edgeWidth <-
+    setIntersections %>%
+    arrange(set1, set2) %>%
+    select(set1, set2, linkThickness) %>%
+    spread(set2, linkThickness) %>%
+    select(-set1) %>%
+    as.matrix()
+  rownames(edgeWidth) <- sets
 
-    # Calculate edges
-    edges <-
-      setIntersections %>%
-      arrange(set1, set2) %>%
-      select(set1, set2, Nintersect) %>%
-      spread(set2, Nintersect) %>%
-      select(-set1) %>%
-      as.matrix()
-    rownames(edges) <- sets
-
-    if(!"none" %in% focusSet) {
-      # Remove all links besides focus group
-      if(length(focusSet) == 1) {
-        edges[-which(sets %in% focusSet),] <- 0
-        edgesDisProp[-which(sets %in% focusSet),] <- 0
-      } else {
-        edges[-which(sets %in% focusSet), ] <- 0
-        edges[, -which(sets %in% focusSet)] <- 0
-        edgesDisProp[-which(sets %in% focusSet), ] <- 0
-        edgesDisProp[, -which(sets %in% focusSet)] <- 0
-      }
-    }
-
-    # Scale edges by thousands
-    edges = edges * countScale
-
-  } else if (linkThickness == "percent") {
-
-    if("none" %in% focusSet) {
-
-      edges <-
-        setIntersections %>%
-        arrange(set1, set2) %>%
-        select(set1, set2, prop) %>%
-        spread(set2, prop) %>%
-        select(-set1) %>%
-        as.matrix()
-      rownames(edges) <- sets
-
+  if(!"none" %in% focusSets) {
+    # Remove all links besides focus group
+    if(length(focusSets) == 1) {
+      edgeWidth[-which(sets %in% focusSets),] <- 0
+      edgeColor[-which(sets %in% focusSets),] <- 0
     } else {
-
-      edges <-
-        setIntersections %>%
-        arrange(set1, set2) %>%
-        select(set1, set2, prop1) %>%
-        spread(set2, prop1) %>%
-        select(-set1) %>%
-        as.matrix()
-      rownames(edges) <- sets
-
-      # Remove all links besides focus group
-      if(length(focusSet) == 1) {
-        edges[-which(sets %in% focusSet),] <- 0
-        edgesDisProp[-which(sets %in% focusSet),] <- 0
-      } else {
-        edges[-which(sets %in% focusSet), ] <- 0
-        edges[, -which(sets %in% focusSet)] <- 0
-        edgesDisProp[-which(sets %in% focusSet), ] <- 0
-        edgesDisProp[, -which(sets %in% focusSet)] <- 0
-      }
+      edgeWidth[-which(sets %in% focusSets), ] <- 0
+      edgeWidth[, -which(sets %in% focusSets)] <- 0
+      edgeColor[-which(sets %in% focusSets), ] <- 0
+      edgeColor[, -which(sets %in% focusSets)] <- 0
     }
+  }
+  # Remove self-links
+  diag(edgeWidth) <- 0
 
-    # Scale edges to percent
-    edges <- edges * 100
+  # Map edge width to thickness
+  edgeWidthMap <- edgeWidth
+  if (length(edgeWidthLim) == 2) {
+    edgeWidthMap[edgeWidth < edgeWidthLim[1]] <- edgeWidthLim[1]
+    edgeWidthMap[edgeWidth > edgeWidthLim[2]] <- edgeWidthLim[2]
   }
 
-  # Remove self-links
-  diag(edges) <- 0
+  maxWidth <- max(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
+  minWidth <- min(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
+  edgeWidthMap <- (edgeWidthMap - minWidth) / (maxWidth - minWidth)
+  edgeWidthMap <- edgeWidthMap*(maxPlotWidth - minPlotWidth) + minPlotWidth
 
-  # Map disproportionality to colors
-  n <- 101
-  colorVec <- rev(RColorBrewer::brewer.pal(11, "RdBu"))
-  colorPal <- c(colorRampPalette(c(colorVec[1], colorVec[6]))(51),
-            colorRampPalette(c(colorVec[6], colorVec[11]))(51)[-1])
-  scaleLimit <- ceiling(max(abs(range(edgesDisProp))) * 10) / 10
-  edgesDisPropColors <-
-    c(colorPal[as.integer(cut(edgesDisProp,
-                              breaks = c(-Inf,
-                                         seq(disPropLim[1],
-                                             disPropLim[2],
-                                             length.out = n-2),
-                                         Inf)))]) %>%
-    matrix(nrow = nrow(edges), ncol = ncol(edges))
+  # Define color palette
+  n <- 100
+  colorVec <- RColorBrewer::brewer.pal(8, linkColorPal)
+  if(reverseLinkPal) {
+    colorVec = rev(colorVec)
+  }
+  linkPal <- colorRampPalette(colorVec)
+  if (length(colorScaleLim) == 2) {
+    scaleBreaks <- c(-Inf,
+                     seq(colorScaleLim[1],
+                         colorScaleLim[2],
+                         length.out = n - 2),
+                     Inf)
+  } else {
+    scaleBreaks = seq(min(edgeColor[!is.infinite(edgeColor)], na.rm = T),
+                      max(edgeColor[!is.infinite(edgeColor)], na.rm = T),
+                      length.out = n - 2)
+  }
+
+  # Map edge color values to colors
+  edgeColorMap <-
+    c(linkPal(n)[as.integer(cut(edgeColor, breaks = scaleBreaks))]) %>%
+    matrix(nrow = nrow(edgeWidth), ncol = ncol(edgeWidth))
 
   # Maximum edge width
-  maxWidth <- signif(max(edges),1)
+  maxWidth <- signif(max(edgeWidth),1)
 
-  return(list(edges = edges,
+  return(list(edgeWidth = edgeWidth,
+              edgeWidthMap = edgeWidthMap,
               sets = sets,
               nSets = nSets,
               maxDegree = maxDegree,
               degreeMat = degreeMat,
               setSizesVec = setSizesVec,
               maxWidth = maxWidth,
-              edgesDisProp = edgesDisProp,
-              edgesDisPropColors = edgesDisPropColors))
+              edgeColor = edgeColor,
+              edgeColorMap = edgeColorMap))
 }
