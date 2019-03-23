@@ -29,7 +29,7 @@ buildRadialSetsPlot <- function(setSizes,
                                 edgeWidthLim = NULL,
                                 barColor = "darkgrey",
                                 reverseLinkPal = FALSE,
-                                maxPlotWidth = 15,
+                                maxPlotWidth = 5,
                                 minPlotWidth = 1) {
 
 
