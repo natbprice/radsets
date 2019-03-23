@@ -35,7 +35,7 @@ ui <- fluidPage(
                    label = "Link thickness:",
                    choices = c("Percent shared items (normalized by union)" = "prop",
                                "Percent shared items (relative to origin)" = "prop1",
-                               "Number of shared items" = "Niter"),
+                               "Number of shared items" = "Ninter"),
                    multiple = FALSE,
                    selected = "prop"
                )

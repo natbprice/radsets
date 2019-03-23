@@ -5,7 +5,7 @@
 \title{Tooltip for radial sets plot}
 \usage{
 createRadialsetsTooltip(setSizes, setSizesByDegree, setIntersections,
-  pointerLoc, focusSet = "none", linkThickness = "percent")
+  pointerLoc, focusSet = "none", linkThickness = "prop")
 }
 \arguments{
 \item{plotData}{A data frame with data used in plot}

@@ -269,7 +269,7 @@ createRadialsetsTooltip <- function(setSizes,
                                     setIntersections,
                                     pointerLoc,
                                     focusSet = "none",
-                                    linkThickness = "percent") {
+                                    linkThickness = "prop") {
 
   location <- pointerLoc$location
   pointer <- pointerLoc$pointer
@@ -279,17 +279,6 @@ createRadialsetsTooltip <- function(setSizes,
 
   # Maximum degree
   maxDegree <- max(setSizesByDegree[["degree"]])
-
-  # Edges matrix
-  if(linkThickness != "percent") {
-    edgeName <- "Ninter"
-  } else if (linkThickness == "percent") {
-    if(focusSet == "none") {
-      edgeName <- "prop"
-    } else {
-      edgeName <- "prop1"
-    }
-  }
 
   # If pointer is in center of plot, return tooltip for links
   if (location == "link") {
@@ -304,14 +293,14 @@ createRadialsetsTooltip <- function(setSizes,
       setIntersections %>%
       filter(set1 == pointerLoc$set1,
              set2 == pointerLoc$set2) %>%
-      pull(edgeName)
+      pull(linkThickness)
 
-    if (linkThickness == "percent") {
+    if (linkThickness %in% c("prop", "prop1", "prop.relError")) {
       overlap <- overlap * 100
     }
     overlap <- round(overlap)
     if (focusSet == "none") {
-      if (linkThickness == "percent") {
+      if (linkThickness %in% c("prop", "prop1", "prop.relError")) {
         label <-
           glue("{overlap}% of all {name1} and {name2} </br>items belong to both sets")
       } else {
@@ -320,7 +309,7 @@ createRadialsetsTooltip <- function(setSizes,
       }
 
     } else {
-      if (linkThickness == "percent") {
+      if (linkThickness %in% c("prop", "prop1", "prop.relError")) {
         label <-
           glue("{overlap}% of {name1} items</br>also belong to {name2}")
       } else {
@@ -394,170 +383,4 @@ createRadialsetsTooltip <- function(setSizes,
   )
 
   return(tooltipPanel)
-}
-
-#' Tooltip for radial sets plot
-#'
-#' Build tooltip for radial sets network plot
-#'
-#' @param plotData A data frame with data used in plot
-#' @param hover A named list created by \code{\link[shiny]{plotOutput}}
-#'
-#' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
-#'
-#' @import shiny
-#' @import snakecase
-#' @import dplyr
-#' @importFrom glue glue
-#'
-#' @export
-radialSetsClickActions <- function(setSizes,
-                                    setSizesByDegree,
-                                    setIntersections,
-                                    plotClick,
-                                    focusSet = "none",
-                                    linkThickness = "percent",
-                                    countScale = 1) {
-
-  # Unpack coordinates of mouse pointer
-  x <- plotClick$x
-  y <- plotClick$y
-
-  # If mouse is not on plot, return null
-  if (!is.numeric(x)) return(NULL)
-
-  # Convert pointer location to polar coordinates
-  r <- sqrt(x^2+y^2)
-  theta <- atan2(y,x)
-
-  # Convert angle in radians to degrees
-  if (theta>0){
-    deg <- theta*(180/pi)
-  } else{
-    deg <- 360+theta*(180/pi)
-  }
-
-  # Get plot data
-  networkData <- getRadialSetsData(setSizes,
-                                   setSizesByDegree,
-                                   setIntersections,
-                                   linkThickness = linkThickness,
-                                   focusSet = focusSet,
-                                   countScale = countScale)
-
-  # Unpack data
-  edges <- networkData$edges
-  sets <- networkData$sets
-  nSets <- networkData$nSets
-  maxDegree <- networkData$maxDegree
-  degreeMat <- networkData$degreeMat
-  setSizesVec <- networkData$setSizesVec
-  maxWidth <- networkData$maxWidth
-
-  # Loop over sectors collecting sector data
-  secNames <- get.all.sector.index()
-  xplot <- matrix(nrow = length(secNames), ncol = 2)
-  yplot <- matrix(nrow = length(secNames), ncol = 2)
-  xlim <- matrix(nrow = length(secNames), ncol = 2)
-  xToDeg <- vector(mode = "numeric", length = length(secNames))
-  for (i in c(1:length(secNames))){
-    xplot[i,] <- get.cell.meta.data("xplot", sector.index = secNames[i], track.index = 2)
-    yplot[i,] <- get.cell.meta.data("yplot", sector.index = secNames[i], track.index = 2)
-    xlim[i,] <- get.cell.meta.data("xlim", sector.index = secNames[i], track.index = 2)
-  }
-  xplot[1,1] <- 360
-  xToDeg <- (xplot[,1]-xplot[,2])/(xlim[,2]-xlim[,1])
-
-  # Loop over links collecting points for each link
-  links <- list()
-  k <- 1
-  linkInd <- matrix(nrow = nSets, ncol = nSets)
-  for (i in c(1:nSets)){
-    for (j in c(1:nSets)){
-      if (edges[i,j] != 0){
-        sector.index1 <- sets[i]
-        sector.index2 <- sets[j]
-        point1 <- setSizesVec[i]/2
-        point2 <- setSizesVec[j]/2
-        rou = min(get.cell.meta.data("yplot", sector.index = sector.index1, track.index = 2))
-
-        theta1 <-  circlize(point1, 0, sector.index = sector.index1,
-                            track.index = 0)[1, "theta"]
-        theta2 <-  circlize(point2, 0, sector.index = sector.index2,
-                            track.index = 0)[1, "theta"]
-        links[[k]] <-  circlize:::getQuadraticPoints(theta1, theta2, rou1 = rou, rou2 = rou, h = NULL, w = 1)
-        linkInd[i,j] <- k
-        k <- k+1
-      }
-    }
-  }
-
-  # If pointer is in center of plot, return tooltip for links
-  clickLink <- FALSE
-  clickSection <- FALSE
-  clickBar <- FALSE
-  histInd <- NULL
-  name1 <- NULL
-  name2 <- NULL
-  name <- NULL
-  if ((r < min(yplot)) | (r > max(yplot))){
-    for (i in c(1:length(links))){
-
-      # Dataframe of points for ith link
-      df <- data_frame(xvar = links[[i]][,1], yvar = links[[i]][,2])
-
-      # Get matrix of nearby points
-      pointsList <- nearPoints(df, plotClick, xvar = "xvar", yvar = "yvar", addDist = TRUE)
-
-      # If found nearby link, stop search
-      if (!nrow(pointsList) == 0){break}
-    }
-
-    # If search ended with no nearby links return null
-    if (nrow(pointsList) == 0){return(NULL)}
-
-    clickLink <- TRUE
-
-    # Match the link index to the matrix of overlaps
-    ind <- which(linkInd == i, arr.ind = T)
-
-    # Create string displaying overlap for given link
-    name1 <- secNames[ind[1]]
-    name2 <- secNames[ind[2]]
-
-  } else {
-
-    clickSection <- TRUE
-
-    # Determine which sector the pointer is in
-    secInd <- which((deg < xplot[,1]) & (deg > xplot[,2]) & (r > yplot[,1]) & (r < yplot[,2]))
-    if(length(secInd) == 0) {return(NULL)}
-
-    # Calculate bounds for each radial histogram bar
-    rlim <- vector(mode = "numeric", length = maxDegree+1)
-    for (i in c(1:(maxDegree+1))){
-      rlim[i] <- min(yplot)+((i-1)/maxDegree)*(max(yplot)-min(yplot))
-    }
-
-    # Determine which histogram bar the pointer is in
-    r_lb <- rlim[maxDegree:1]
-    r_ub <- rlim[(maxDegree+1):2]
-    histInd <- which( r>= r_lb & r< r_ub)
-
-    s <- degreeMat[secInd,histInd]*xToDeg[secInd]
-    xc <- xplot[secInd,2]+(xplot[secInd,1]-xplot[secInd,2])/2
-    if ((deg <= xc+s/2) & (deg >= xc-s/2)){
-      clickBar = TRUE
-    }
-
-    name <- secNames[secInd]
-  }
-
-  return(list(name = name,
-              name1 = name1,
-              name2 = name2,
-              degree = histInd,
-              clickLink = clickLink,
-              clickSection = clickSection,
-              clickBar = clickBar))
 }
