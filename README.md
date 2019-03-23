@@ -33,6 +33,10 @@ thereby minimizing length of thickest links.
 
 <img src= "./README-examplePlot-1.svg">
 
+In the diagram below, we focus on the crime genre. The links are now
+directional originating from the crime set and link thickness indicates
+the percent of crime movies that belong to the other genres.
+
 <img src= "./README-examplePlot2-1.svg">
 
 #### Venn Euler Diagram

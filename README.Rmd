@@ -83,6 +83,9 @@ buildRadialSetsPlot(
 )
 ```
 
+In the diagram below, we focus on the crime genre. The links are now directional originating from the crime set and link thickness indicates the percent of crime movies that belong to the other genres.
+
+
 ```{r examplePlot2, dev = 'svg', fig.width = 10, fig.height = 10}
 
 buildRadialSetsPlot(
