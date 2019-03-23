@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-### Overview
+### The Problem
 
 The **radsets** package is a solution to the problem of how to visualize
 large overlapping sets. In particular, when analyzing data with many
@@ -43,9 +43,9 @@ small, simple venn diagrams can be useful. However, when the number of
 pairwise interactions is high, identifying patterns may be too difficult
 using simple visualizations. Moreover, it may not be possible to draw a
 venn diagam that accurately represents the overlap between sets. Here we
-use the [venneuler](https://cran.r-project.org/package=venneuler) to
-illustrate the problem with using Venn diagrams when we are interested
-in many overlapping sets.
+use the [venneuler](https://cran.r-project.org/package=venneuler)
+package to illustrate the problem with using Venn diagrams when we are
+interested in many overlapping sets.
 
 <img src= "./README-simpleVennDiag-1.svg">
 
@@ -55,8 +55,8 @@ in many overlapping sets.
 
 Radial Sets diagrams were originally proposed by Alsallakh, Aigner,
 Miksch, and Hauser. The **radsets** package is unaffiliated with these
-researchers and the visualizations produced differ from the original
-design.
+researchers and the visualizations produced differ slightly from the
+original design.
 
 Alsallakh, B., Aigner, W., Miksch, S., & Hauser, H. (2013). Radial sets:
 Interactive visual analysis of large overlapping sets. IEEE Transactions

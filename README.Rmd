@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Overview
+### The Problem
 The **radsets** package is a solution to the problem of how to visualize large overlapping sets. In particular, when analyzing data with many overlapping sets it is difficult to draw insight from a Venn diagram. Moreover, it may be impossible to draw a Venn diagram that accurately reflects the size of set intersections.
 
 The solution implemented in the **radsets** package is a based on Radial Sets diagrams (see references). Radial Sets diagrams are an interactive, network-based visualization for the analysis of ovarlapping sets.
@@ -103,7 +103,7 @@ buildRadialSetsPlot(
 ```
 
 #### Venn Euler Diagram
-Radial sets are useful for visualizing relationships among variables which have many features in common. When the number of variables is small, simple venn diagrams can be useful. However, when the number of pairwise interactions is high, identifying patterns may be too difficult using simple visualizations. Moreover, it may not be possible to draw a venn diagam that accurately represents the overlap between sets. Here we use the [venneuler](https://cran.r-project.org/package=venneuler) to illustrate the problem with using Venn diagrams when we are interested in many overlapping sets.
+Radial sets are useful for visualizing relationships among variables which have many features in common. When the number of variables is small, simple venn diagrams can be useful. However, when the number of pairwise interactions is high, identifying patterns may be too difficult using simple visualizations. Moreover, it may not be possible to draw a venn diagam that accurately represents the overlap between sets. Here we use the [venneuler](https://cran.r-project.org/package=venneuler) package to illustrate the problem with using Venn diagrams when we are interested in many overlapping sets.
 
 
 ```{r simpleVennDiag, dev = 'svg'}
@@ -130,6 +130,6 @@ plot(v)
 ```
 
 ## References
-Radial Sets diagrams were originally proposed by Alsallakh, Aigner, Miksch, and Hauser. The **radsets** package is unaffiliated with these researchers and the visualizations produced differ from the original design.
+Radial Sets diagrams were originally proposed by Alsallakh, Aigner, Miksch, and Hauser. The **radsets** package is unaffiliated with these researchers and the visualizations produced differ slightly from the original design.
 
 Alsallakh, B., Aigner, W., Miksch, S., & Hauser, H. (2013). Radial sets: Interactive visual analysis of large overlapping sets. IEEE Transactions on Visualization and Computer Graphics, 19(12), 2496–2505. Retrieved from http://ieeexplore.ieee.org/abstract/document/6634104/
