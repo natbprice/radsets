@@ -15,21 +15,30 @@ network-based visualization for the analysis of ovarlapping sets.
 
 ### MovieLens Example
 
+The [MovieLens dataset](https://grouplens.org/datasets/movielens/20m/)
+includes 19 genre attributes for 27,000 movies.
+
 #### Radial Sets Diagram
 
-The [MovieLens dataset](https://grouplens.org/datasets/movielens/20m/)
-includes 19 genre attributes for 27,000 movies. A Radial Sets diagram
-created with the **radsets** package is shown below. The width of the
-links indicate the percent overlap (normalized by union) between each
-movie genre. The link color indicates the relative difference between
-the observed overlap and the expected overlap assuming marginal
-independence. The link color palette is diverging blue to red with red
-indicating overlaps that are larger than expected. The bars in each
-sector indicate the number of items unique to each set, shared with one
-other set, shared with two other sets, or shared with three or more
-other sets. The set locations on the circumference have been optimized
-using the **radsets** package to place similar sets closer together,
-thereby minimizing length of thickest links.
+A Radial Sets diagram created with the **radsets** package is shown
+below.
+
+The width of the links indicate the percent overlap (normalized by
+union) between each movie genre. The link color indicates the relative
+difference between the observed overlap and the expected overlap
+assuming marginal independence. The link color palette is diverging blue
+to red with red indicating overlaps that are larger than expected.
+
+The size of the sections on the circumference are drawn to scale based
+on the size of each set (i.e., the number of items in each set
+regardless of overlap). However, since the sets overlap the section
+sizes can not be interpreted as a donut chart or pie chart. The set
+locations on the circumference have been optimized to place similar sets
+closer together, thereby minimizing length of thickest links.
+
+The bars in each sector indicate the number of items unique to each set,
+shared with one other set, shared with two other sets, or shared with
+three or more other sets.
 
 <img src= "./README-examplePlot-1.svg">
 
