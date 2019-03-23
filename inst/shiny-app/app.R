@@ -33,10 +33,11 @@ ui <- fluidPage(
                selectizeInput(
                    "linkThickness",
                    label = "Link thickness:",
-                   choices = c("Percent" = "percent",
-                               "Count" = "count"),
+                   choices = c("Percent shared items (normalized by union)" = "prop",
+                               "Percent shared items (relative to origin)" = "prop1",
+                               "Number of shared items" = "Niter"),
                    multiple = FALSE,
-                   selected = "percent"
+                   selected = "prop"
                )
         ),
         column(3,
@@ -168,7 +169,7 @@ server <- function(input, output, session) {
       setIntersections = summaryData()$setIntersections,
       focusSet = input$focusSet,
       linkThickness = input$linkThickness,
-      sectorLabelFontSize = 1.5,
+      sectorLabelFontSize = 1,
       bezierW = input$bezierW,
       bezierHRatio = input$bezierHRatio
       # setOrder = c("Musical", "Animation", "Children", "Fantasy", "Adventure",
