@@ -1,3 +1,5 @@
+# THIS CODE SHOULD EVENTUALLY BE IN VIGNETTE OR REMOVED
+
 library(tidyverse)
 library(AlgDesign)
 library(purrr)
@@ -66,6 +68,99 @@ png("PlotPng.png", width = 4*96, height = 4*96)
 par(mar=rep(0,4))
 buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections, focusSet = "Sci-Fi")
 dev.off()
+
+
+# Sort links --------------------------------------------------------------
+
+# Load sample data
+data(movieSets)
+
+# Define set names (user specified)
+setNames <- movieSets %>%
+  select(Action:Western) %>%
+  colnames()
+
+# Define ID column (user specified)
+idName <- "movieId"
+
+# Define max degree (user specified)
+maxDegree <- 4
+
+# Calculate set sizes
+setSizes <-
+  getSetSizes(movieSets, setNames)
+
+# Calculate set sizes by degree
+setSizesByDegree <-
+  getSetSizesByDegree(movieSets, setNames, idName)
+
+# Calculate edge data
+setIntersections <-
+  getSetIntersections(movieSets, setNames, idName)
+
+optOrder <- optimizeLinkOrder(setSizes,
+                              setSizesByDegree,
+                              setIntersections %>%
+                                mutate(w = prop.relError,
+                                       w = if_else(w < -1, -1, w),
+                                       w = if_else(w > 1, 1, w),
+                                       w = (w - min(w))/(max(w) - min(w))),
+                              linkThickness = "w")
+
+svg("OptOrderError.svg", width = 12, height = 12)
+buildRadialSetsPlot(
+  setSizes,
+  setSizesByDegree,
+  setIntersections,
+  linkThickness = "prop.relError",
+  linkColor = "prop.relError",
+  linkColorPal = "RdBu",
+  reverseLinkPal = T,
+  setOrder = c("Romance", "Musical", "Adventure", "IMAX", "Children", "Animation",
+               "Fantasy", "Sci-Fi", "Action", "Horror", "Mystery", "Thriller",
+               "Film-Noir", "Crime", "War", "Drama", "Western", "Comedy", "Documentary"
+  ),
+  # axisLabels = T,
+  # axisLabelFontSize = 0.5,
+  # majorTick = T,
+  # countScale = 1,
+  colorScaleLim = c(-1,1),
+  edgeWidthLim = c(-1,1),
+  # facing = "downward"
+  # focusSet = "Drama",
+  maxPlotWidth = 5,
+  sectorColor = "white"
+)
+dev.off()
+
+
+svg("OptOrder.svg", width = 12, height = 12)
+buildRadialSetsPlot(
+  setSizes,
+  setSizesByDegree,
+  setIntersections,
+  linkThickness = "prop.relError",
+  linkColor = "prop.relError",
+  linkColorPal = "RdBu",
+  reverseLinkPal = T,
+  setOrder = c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children",
+               "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror",
+               "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir",
+               "Documentary"),
+  # axisLabels = T,
+  # axisLabelFontSize = 0.5,
+  # majorTick = T,
+  # countScale = 1,
+  colorScaleLim = c(-1,1),
+  edgeWidthLim = c(-1,1),
+  # facing = "downward"
+  # focusSet = "Drama",
+  maxPlotWidth = 5,
+  sectorColor = "white"
+)
+dev.off()
+
+
 
 # ecommerce ---------------------------------------------------------------
 
