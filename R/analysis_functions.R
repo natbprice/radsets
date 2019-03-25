@@ -13,13 +13,13 @@
 #'
 #' @examples
 #' # Define set names
-#' data(movies)
-#' setNames <- movies %>%
+#' data("movieSets")
+#' setNames <- movieSets %>%
 #'   select(Action:Western) %>%
 #'   colnames()
 #'
 #' # Calculate set sizes
-#' getSetSizes(movies, setNames)
+#' getSetSizes(movieSets, setNames)
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -74,16 +74,16 @@ getSetSizes <- function(df, setNames) {
 #'
 #' @examples
 #' # Define set names
-#' data(movies)
-#' setNames <- movies %>%
+#' data("movieSets")
+#' setNames <- movieSets  %>%
 #'   select(Action:Western) %>%
 #'   colnames()
 #'
 #' # Calculate set sizes
-#' getSetSizesByDegree(movies, setNames, "Name")
+#' getSetSizesByDegree(movieSets , setNames, "movieId")
 #'
 #' # Calculate set sizes with max degree 3
-#' getSetSizesByDegree(movies, setNames, "Name", maxDegree = 3)
+#' getSetSizesByDegree(movieSets , setNames, "movieId", maxDegree = 3)
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -157,13 +157,13 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
 #'
 #' @examples
 #' # Define set names
-#' data(movies)
-#' setNames <- movies %>%
+#' data("movieSets")
+#' setNames <- movieSets %>%
 #'   select(Action:Western) %>%
 #'   colnames()
 #'
 #' # Calculate set sizes
-#' getSetIntersections(movies, setNames, "Name")
+#' getSetIntersections(movieSets, setNames, "movieId")
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -267,6 +267,8 @@ getSetIntersections <- function(df, setNames, idName) {
 #' \code{\link{getSetSizesByDegree}}
 #' @param setIntersections Data frame of set intersection sizes from
 #' \code{\link{getSetIntersections}}
+#' @param setOrder An optional input to specify order of sets (counterclockwise).
+#' Partial ordering is performed using \code{\link[forcats]{fct_relevel}}
 #' @param linkThickness Character vector specifying name of variable from
 #' \code{setIntersections} data frame to map to link thickness
 #' @param linkColor Character vector specifying name of variable from
@@ -280,6 +282,25 @@ getSetIntersections <- function(df, setNames, idName) {
 #' sizes
 #' @param colorScaleLim An optional input to specify scale limits on link colors.
 #' Values outside limits are mapped to ends of color scale.
+#' @param edgeScaleLim An optional input to specify scale limits on link thickness.
+#' Values outside limits are mapped to ends of thickness scale.
+#' @param reverseLinkPal A logical input specifying if color scale should be reveresed
+#' @param maxPlotWidth A numeric input specifying maximum line thickness of links
+#' @param minPlotWidth A numeric input specifying minimum line thickness of links
+#'
+#' @return A list with elements:
+#' \itemize{
+#'  \item \code{edgeWidth} matrix of link thickness variable (original scale)
+#'  \item \code{edgeWidthMap} matrix of link thickness mapped to line thickness
+#'  \item \code{edgeColor} matrix of link color variable (original scale)
+#'  \item \code{edgeWidthMap} matrix of link color mapped to colors
+#'  \item \code{degreeMat} matrix of bar sizes
+#'  \item \code{sets} character vector of set names
+#'  \item \code{nSets} number of sets
+#'  \item \code{maxDegree} max degree of overlaps in bar plot
+#'  \item \code{setSizesVec} vector of set sizes
+#'  \item \code{maxWidth} maximum width of lines for edges
+#' }
 #'
 #' @import dplyr
 #' @importFrom tidyr spread
@@ -415,12 +436,12 @@ getRadialSetsData <- function(setSizes,
 
   return(list(edgeWidth = edgeWidth,
               edgeWidthMap = edgeWidthMap,
+              edgeColor = edgeColor,
+              edgeColorMap = edgeColorMap,
+              degreeMat = degreeMat,
               sets = sets,
               nSets = nSets,
               maxDegree = maxDegree,
-              degreeMat = degreeMat,
               setSizesVec = setSizesVec,
-              maxWidth = maxWidth,
-              edgeColor = edgeColor,
-              edgeColorMap = edgeColorMap))
+              maxWidth = maxWidth))
 }

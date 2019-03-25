@@ -20,6 +20,9 @@ getRadialSetsData(setSizes, setSizesByDegree, setIntersections,
 \item{setIntersections}{Data frame of set intersection sizes from
 \code{\link{getSetIntersections}}}
 
+\item{setOrder}{An optional input to specify order of sets (counterclockwise).
+Partial ordering is performed using \code{\link[forcats]{fct_relevel}}}
+
 \item{linkThickness}{Character vector specifying name of variable from
 \code{setIntersections} data frame to map to link thickness}
 
@@ -38,6 +41,30 @@ sizes}
 
 \item{colorScaleLim}{An optional input to specify scale limits on link colors.
 Values outside limits are mapped to ends of color scale.}
+
+\item{reverseLinkPal}{A logical input specifying if color scale should be reveresed}
+
+\item{maxPlotWidth}{A numeric input specifying maximum line thickness of links}
+
+\item{minPlotWidth}{A numeric input specifying minimum line thickness of links}
+
+\item{edgeScaleLim}{An optional input to specify scale limits on link thickness.
+Values outside limits are mapped to ends of thickness scale.}
+}
+\value{
+A list with elements:
+\itemize{
+ \item \code{edgeWidth} matrix of link thickness variable (original scale)
+ \item \code{edgeWidthMap} matrix of link thickness mapped to line thickness
+ \item \code{edgeColor} matrix of link color variable (original scale)
+ \item \code{edgeWidthMap} matrix of link color mapped to colors
+ \item \code{degreeMat} matrix of bar sizes
+ \item \code{sets} character vector of set names
+ \item \code{nSets} number of sets
+ \item \code{maxDegree} max degree of overlaps in bar plot
+ \item \code{setSizesVec} vector of set sizes
+ \item \code{maxWidth} maximum width of lines for edges
+}
 }
 \description{
 Create a list with data needed by \code{\link{buildRadialSetsPlot}}.

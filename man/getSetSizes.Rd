@@ -25,12 +25,12 @@ input should correspond to the binary indicator columns in the data frame.
 }
 \examples{
 # Define set names
-data(movies)
-setNames <- movies \%>\%
+data("movieSets")
+setNames <- movieSets \%>\%
   select(Action:Western) \%>\%
   colnames()
 
 # Calculate set sizes
-getSetSizes(movies, setNames)
+getSetSizes(movieSets, setNames)
 
 }

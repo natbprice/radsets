@@ -35,15 +35,15 @@ input should correspond to the binary indicator columns in the data frame.
 }
 \examples{
 # Define set names
-data(movies)
-setNames <- movies \%>\%
+data("movieSets")
+setNames <- movieSets  \%>\%
   select(Action:Western) \%>\%
   colnames()
 
 # Calculate set sizes
-getSetSizesByDegree(movies, setNames, "Name")
+getSetSizesByDegree(movieSets , setNames, "movieId")
 
 # Calculate set sizes with max degree 3
-getSetSizesByDegree(movies, setNames, "Name", maxDegree = 3)
+getSetSizesByDegree(movieSets , setNames, "movieId", maxDegree = 3)
 
 }
