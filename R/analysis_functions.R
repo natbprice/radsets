@@ -303,7 +303,7 @@ getSetIntersections <- function(df, setNames, idName) {
 #' }
 #'
 #' @import dplyr
-#' @importFrom tidyr spread
+#' @importFrom tidyr spread complete
 #' @importFrom forcats fct_relevel
 #' @importFrom RColorBrewer brewer.pal
 #'
@@ -345,6 +345,8 @@ getRadialSetsData <- function(setSizes,
     arrange(set) %>%
     select(set, degree, N) %>%
     mutate(N = N * countScale) %>%
+    mutate(degree = factor(degree, levels = 1:max(degree))) %>%
+    tidyr::complete(set, degree, fill = list(N=0)) %>%
     tidyr::spread(degree, N) %>%
     select(-set) %>%
     as.matrix()
@@ -402,10 +404,12 @@ getRadialSetsData <- function(setSizes,
     edgeWidthMap[edgeWidth > edgeWidthLim[2]] <- edgeWidthLim[2]
   }
 
+  diag(edgeWidthMap) <- NA
   maxWidth <- max(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
   minWidth <- min(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
   edgeWidthMap <- (edgeWidthMap - minWidth) / (maxWidth - minWidth)
   edgeWidthMap <- edgeWidthMap*(maxPlotWidth - minPlotWidth) + minPlotWidth
+  diag(edgeWidthMap) <- 0
 
   # Define color palette
   n <- 100
