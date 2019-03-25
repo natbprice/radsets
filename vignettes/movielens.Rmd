@@ -1,0 +1,126 @@
+---
+title: "MovieLens Example"
+author: "Nat Price"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{MovieLens Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(radsets)
+library(dplyr)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Create a plot 
+
+```{r basicPlot, fig.width = 7, fig.height = 7, fig.cap = "Sets in alphabetical order"}
+
+# Load sample data
+data(movieSets)
+
+# Define set names
+setNames <- movieSets %>%
+  select(Action:Western) %>%
+  colnames()
+
+# Define ID column
+idName <- "movieId"
+
+# Define max degree
+maxDegree <- 4
+
+# Calculate set sizes
+setSizes <-
+  getSetSizes(movieSets, setNames)
+
+# Calculate set sizes by degree
+setSizesByDegree <-
+  getSetSizesByDegree(movieSets, setNames, idName)
+
+# Calculate edge data
+setIntersections <-
+  getSetIntersections(movieSets, setNames, idName)
+
+radialSetsData <-
+  getRadialSetsData(setSizes,
+                    setSizesByDegree,
+                    setIntersections)
+
+buildRadialSetsPlot(
+  setSizes,
+  setSizesByDegree,
+  setIntersections,
+  linkThickness = "prop",
+  linkColor = "prop.relError",
+  linkColorPal = "RdBu",
+  reverseLinkPal = T,
+  colorScaleLim = c(-1,1),
+  maxPlotWidth = 5,
+  sectorColor = "white"
+)
+```
+
+Optimize set order
+
+```{r sortLinks, eval = FALSE}
+optOrder <- optimizeLinkOrder(setSizes,
+                              setSizesByDegree,
+                              setIntersections,
+                              linkThickness = "prop")
+```
+
+```{r optOrder, echo = FALSE}
+optOrder <- c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children",
+               "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror",
+               "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir",
+               "Documentary")
+```
+
+```{r, fig.width = 7, fig.height = 7, fig.cap = "Optimal set order"}
+buildRadialSetsPlot(
+  setSizes,
+  setSizesByDegree,
+  setIntersections,
+  linkThickness = "prop",
+  linkColor = "prop.relError",
+  linkColorPal = "RdBu",
+  reverseLinkPal = T,
+  setOrder = optOrder,
+  colorScaleLim = c(-1,1),
+  maxPlotWidth = 5,
+  sectorColor = "white"
+)
+```
+
+Plots should be saved to a vector improve display.
+```{r, eval = F}
+svg("myPlot.svg", width = 12, height = 12)
+buildRadialSetsPlot(
+  setSizes,
+  setSizesByDegree,
+  setIntersections,
+  linkThickness = "prop",
+  linkColor = "prop.relError",
+  linkColorPal = "RdBu",
+  reverseLinkPal = T,
+  setOrder = optOrder,
+  colorScaleLim = c(-1,1),
+  maxPlotWidth = 5,
+  sectorColor = "white"
+)
+dev.off()
+```
+
+
+
+
