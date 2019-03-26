@@ -1,0 +1,95 @@
+---
+title: "Groceries Example"
+author: "Nat Price"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Groceries Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(radsets)
+library(dplyr)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Apply limits to width and thickness scales. Drop any sets that do not have links after limits are applied.
+
+```{r basicPlot, fig.width = 7, fig.height = 7, fig.cap = "Frequent grocery purchases"}
+
+data("groceries")
+
+# Define set names
+setNames <- groceries %>%
+  select(-id) %>%
+  colnames()
+
+# Define ID column
+idName <- "id"
+
+# Calculate set sizes
+setSizes <-
+  getSetSizes(groceries, setNames)
+
+# Calculate set sizes by degree
+setSizesByDegree <-
+  getSetSizesByDegree(groceries, setNames, idName, maxDegree = 10)
+
+# Calculate edge data
+setIntersections <-
+  getSetIntersections(groceries, setNames, idName)
+
+# Optimize link order
+optOrder <- optimizeLinkOrder(setSizes,
+                              setSizesByDegree,
+                              setIntersections,
+                              linkThickness = "prop")
+buildRadialSetsPlot(
+  setSizes,
+  setSizesByDegree,
+  setIntersections,
+  linkThickness = "prop",
+  linkColor = "prop.relError",
+  linkColorPal = "YlOrRd",
+  reverseLinkPal = F,
+  colorScaleLim = c(0.5,1),
+  colorScaleMapFun = "censor",
+  edgeScaleLim = c(0.05,1),
+  edgeScaleMapFun = "censor",
+  sectorColor = "white",
+  sectorLabelFontSize = 0.8,
+  setOrder = optOrder,
+  dropSets = T
+)
+```
+
+Plots should be saved to a vector improve display.
+```{r, eval = F}
+svg("myPlot.svg", width = 12, height = 12)
+buildRadialSetsPlot(
+  setSizes,
+  setSizesByDegree,
+  setIntersections,
+  linkThickness = "prop",
+  linkColor = "prop.relError",
+  linkColorPal = "YlOrRd",
+  reverseLinkPal = F,
+  colorScaleLim = c(0.5,1),
+  colorScaleMapFun = "censor",
+  edgeScaleLim = c(0.05,1),
+  edgeScaleMapFun = "censor",
+  sectorColor = "white",
+  # focusSets = "frankfurter",
+  sectorLabelFontSize = 0.8,
+  setOrder = optOrder,
+  dropSets = T
+)
+dev.off()
+```
+
