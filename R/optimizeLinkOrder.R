@@ -45,44 +45,38 @@ optimizeLinkOrder <- function(setSizes,
         ink <- rep(0, 4)
         for (i in 1:4) {
 
-          # Build plot
-          buildRadialSetsPlot(
-            setSizes,
-            setSizesByDegree,
-            setIntersections,
-            focusSet = setOrder[[i]],
-            setOrder = setOrder[[i]],
-            linkThickness = linkThickness,
-          )
+          # Calculate node positions
+          nodes <-
+            setSizes %>%
+            mutate(set = forcats::fct_relevel(set, setOrder[[i]])) %>%
+            arrange(set) %>%
+            mutate(Ntotal = sum(N),
+                   pad = 1) %>%
+            mutate(theta = N/Ntotal * (360 - sum(pad)),
+                   r = 0.47,
+                   theta2 = 360 - (cumsum(theta) + cumsum(pad) - 1),
+                   theta1 = theta2 + theta,
+                   thetaC = theta1 + (theta2 - theta1)/2,
+                   xc = r*cos(thetaC*(pi/180)),
+                   yc = r*sin(thetaC*(pi/180))) %>%
+            mutate(set = as.character(set))
 
-          # Radial sets data
-          radialSetsData <-
-            getRadialSetsData(
-              setSizes = setSizes,
-              setSizesByDegree = setSizesByDegree,
-              setIntersections = setIntersections,
-              linkThickness = linkThickness,
-              focusSet = setOrder[[i]],
-              setOrder = setOrder[[i]]
-            )
-
-          # Plot metadata
-          metadata <- getRadialSetsMetadata(radialSetsData)
-
-          # Calculate link lengths
-          ink[i] <- metadata$linkData %>%
-            left_join(setIntersections %>%
-                        select(set1, set2, w = linkThickness),
-                      by = c("set1", "set2")) %>%
+          # Calculate ink used to plot links
+          ink[i] <-
+            setIntersections %>%
             filter(set1 %in% setOrder[[i]],
                    set2 %in% setOrder[[i]]) %>%
-            mutate(
-              dx = lead(x) - x,
-              dy = lead(y) - y,
-              ds = sqrt(dx ^ 2 + dy ^ 2),
-              dInk = abs(ds * w)
-            ) %>%
-            summarize(ink = sum(dInk, na.rm = TRUE)) %>%
+            filter(set1 != set2) %>%
+            select(set1, set2, w = linkThickness) %>%
+            mutate(set1 = as.character(set1),
+                   set2 = as.character(set2)) %>%
+            left_join(nodes %>% select(set, x1 = xc, y1 = yc), by = c("set1"="set")) %>%
+            left_join(nodes %>% select(set, x2 = xc, y2 = yc), by = c("set2"="set")) %>%
+            mutate(dx = x2 - x1,
+                   dy = x2 - x1,
+                   s = sqrt(dx^2 + dy^2),
+                   ink = s*w) %>%
+            summarize(ink = sum(ink)) %>%
             pull(ink)
         }
 
