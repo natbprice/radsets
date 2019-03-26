@@ -72,18 +72,11 @@ buildRadialSetsPlot(
 
 Optimize set order
 
-```{r sortLinks, eval = FALSE}
+```{r sortLinks}
 optOrder <- optimizeLinkOrder(setSizes,
                               setSizesByDegree,
                               setIntersections,
                               linkThickness = "prop")
-```
-
-```{r optOrder, echo = FALSE}
-optOrder <- c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children",
-               "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror",
-               "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir",
-               "Documentary")
 ```
 
 ```{r, fig.width = 7, fig.height = 7, fig.cap = "Optimal set order"}
@@ -95,10 +88,10 @@ buildRadialSetsPlot(
   linkColor = "prop.relError",
   linkColorPal = "RdBu",
   reverseLinkPal = T,
-  setOrder = optOrder,
+  setOrder = optOrder[c(14:19,1:13)],
   colorScaleLim = c(-1,1),
   maxPlotWidth = 5,
-  sectorColor = "white"
+  sectorColor = "white",
 )
 ```
 
