@@ -237,11 +237,11 @@ getSetIntersections <- function(df, setNames, idName) {
     # Calculate difference in observed vs predicted set sizes
     mutate(Ninter.pred = if_else(set1 != set2,
                                  Ntotal*((N1 / Ntotal) * (N2 / Ntotal)),
-                                 N1),
+                                 as.numeric(N1)),
            Nunion.pred = if_else(set1 != set2,
                                  Ntotal*((N1 / Ntotal) + (N2 / Ntotal) -
                                            ((N1 / Ntotal) * (N2 / Ntotal))),
-                                 N1),
+                                 as.numeric(N1)),
            prop.pred = Ninter.pred / Nunion.pred,
            prop1.pred = Ninter.pred / N1,
            Ninter.error = Ninter - Ninter.pred,
