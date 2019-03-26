@@ -1,5 +1,6 @@
 library(arules)
 library(dplyr)
+library(readr)
 
 data("Groceries")
 summary(Groceries)
