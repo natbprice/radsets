@@ -34,7 +34,8 @@ buildRadialSetsPlot <- function(setSizes,
                                 colorScaleMapFun = "squish",
                                 edgeScaleLim = c(-Inf, Inf),
                                 edgeScaleMapFun = "censor",
-                                edgeWidthRange = c(1,8)) {
+                                edgeWidthRange = c(1,8),
+                                dropSets = FALSE) {
 
 
 
@@ -53,7 +54,8 @@ buildRadialSetsPlot <- function(setSizes,
                                 colorScaleMapFun = colorScaleMapFun,
                                 edgeScaleLim = edgeScaleLim,
                                 edgeScaleMapFun = edgeScaleMapFun,
-                                edgeWidthRange = edgeWidthRange)
+                                edgeWidthRange = edgeWidthRange,
+                                dropSets = dropSets)
 
   # Unpack data
   edgeWidth <- radialSetsData$edgeWidth

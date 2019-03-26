@@ -295,6 +295,7 @@ getSetIntersections <- function(df, setNames, idName) {
 #' @param reverseLinkPal A logical input specifying if color scale should be reversed
 #' @param edgeWidthRange A numeric vector specifying minimum and maximum line
 #' thickness of links
+#' @param dropSets A logical indicating if sets without links should be removed
 #'
 #' @return A list with elements:
 #' \itemize{
@@ -330,7 +331,8 @@ getRadialSetsData <- function(setSizes,
                            colorScaleMapFun = "squish",
                            edgeScaleLim = c(-Inf, Inf),
                            edgeScaleMapFun = "censor",
-                           edgeWidthRange = c(1,8)) {
+                           edgeWidthRange = c(1,8),
+                           dropSets = FALSE) {
 
   # Reorder sets
   sets <- factor(levels(setIntersections[["set1"]]))
@@ -435,10 +437,26 @@ getRadialSetsData <- function(setSizes,
   edgeColorMap <- scales::col_numeric(palette = colorVec,
                                       domain = colorScaleLim,
                                       na.color = NA)(edgeColorMap) %>%
-      matrix(nrow = nrow(edgeWidth), ncol = ncol(edgeWidth))
+      matrix(nrow = nrow(edgeWidth), ncol = ncol(edgeWidth),
+             dimnames = list(rownames(edgeWidth), colnames(edgeWidth)))
 
   # Maximum edge width
   maxWidth <- signif(max(edgeWidth),1)
+
+  # Drop sets that do not have links
+  if(dropSets) {
+
+    dropColor <- is.na(edgeColorMap) | (edgeColorMap == 0) | is.infinite(edgeColorMap)
+    dropWidth <- is.na(edgeWidthMap) | (edgeWidthMap == 0) | is.infinite(edgeWidthMap)
+    dropInd <- which(colSums(dropColor | dropWidth) == ncol(edgeWidthMap))
+
+    setSizesVec <- setSizesVec[-dropInd]
+    sets <- sets[-dropInd]
+    nSets <- length(sets)
+    edgeColorMap <- edgeColorMap[-dropInd, -dropInd]
+    edgeWidthMap <- edgeWidthMap[-dropInd, -dropInd]
+    degreeMat <- degreeMat[-dropInd,]
+  }
 
   return(list(edgeWidth = edgeWidth,
               edgeWidthMap = edgeWidthMap,

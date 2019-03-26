@@ -15,7 +15,7 @@ buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections,
   barColor = "darkgrey", reverseLinkPal = FALSE,
   colorScaleLim = c(-1, 1), colorScaleMapFun = "squish",
   edgeScaleLim = c(-Inf, Inf), edgeScaleMapFun = "censor",
-  edgeWidthRange = c(1, 8))
+  edgeWidthRange = c(1, 8), dropSets = FALSE)
 }
 \arguments{
 \item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
@@ -65,6 +65,8 @@ thickness limits}
 
 \item{edgeWidthRange}{A numeric vector specifying minimum and maximum line
 thickness of links}
+
+\item{dropSets}{A logical indicating if sets without links should be removed}
 }
 \description{
 Build radial sets plot
