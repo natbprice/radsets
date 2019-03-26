@@ -77,18 +77,26 @@ setSizesByDegree <-
 setIntersections <-
   getSetIntersections(movieSets, setNames, idName)
 
+# Optimize link order
+optOrder <- optimizeLinkOrder(setSizes,
+                              setSizesByDegree,
+                              setIntersections,
+                              linkThickness = "prop")
+
+# Create plot
 buildRadialSetsPlot(
   setSizes,
   setSizesByDegree,
   setIntersections,
-  setOrder = c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children", 
-               "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror", 
-               "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir", 
-               "Documentary"),
-  colorScaleLim = c(-1, 1),
-  maxPlotWidth = 10,
+  linkThickness = "prop",
+  linkColor = "prop.relError",
   linkColorPal = "RdBu",
-  reverseLinkPal = "TRUE"
+  reverseLinkPal = T,
+  setOrder = optOrder[c(14:19,1:13)],
+  colorScaleLim = c(-1,1),
+  colorScaleMapFun = "squish",
+  edgeWidthRange = c(1,8),
+  sectorColor = "white"
 )
 ```
 
@@ -101,16 +109,16 @@ buildRadialSetsPlot(
   setSizes,
   setSizesByDegree,
   setIntersections,
-  focusSets = "Crime",
-  linkThickness = "prop1",
-  setOrder = c("Drama", "Romance", "Comedy", "Musical", "Animation", "Children", 
-               "Fantasy", "Adventure", "Action", "War", "Sci-Fi", "Horror", 
-               "Crime", "Thriller", "Mystery", "IMAX", "Western", "Film-Noir", 
-               "Documentary"),
-  colorScaleLim = c(-1, 1),
-  maxPlotWidth = 10,
+  linkThickness = "prop",
+  linkColor = "prop.relError",
   linkColorPal = "RdBu",
-  reverseLinkPal = "TRUE"
+  reverseLinkPal = T,
+  setOrder = optOrder[c(14:19,1:13)],
+  colorScaleLim = c(-1,1),
+  colorScaleMapFun = "squish",
+  edgeWidthRange = c(1,8),
+  sectorColor = "white",
+  focusSets = "Crime"
 )
 ```
 
