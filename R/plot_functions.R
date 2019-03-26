@@ -1,5 +1,7 @@
 #' Build radial sets plot
 #'
+#' @inheritParams getRadialSetsData
+#'
 #' @import circlize
 #' @importFrom randomcoloR randomColor
 #'
@@ -25,12 +27,14 @@ buildRadialSetsPlot <- function(setSizes,
                                 majorTick = FALSE,
                                 bezierW = 1,
                                 bezierHRatio = 0.75,
-                                colorScaleLim = c(-1, 1),
                                 edgeWidthLim = NULL,
                                 barColor = "darkgrey",
                                 reverseLinkPal = FALSE,
-                                maxPlotWidth = 5,
-                                minPlotWidth = 1) {
+                                colorScaleLim = c(-1, 1),
+                                colorScaleMapFun = "squish",
+                                edgeScaleLim = c(-Inf, Inf),
+                                edgeScaleMapFun = "censor",
+                                edgeWidthRange = c(1,8)) {
 
 
 
@@ -44,11 +48,12 @@ buildRadialSetsPlot <- function(setSizes,
                                 linkThickness = linkThickness,
                                 focusSets = focusSets,
                                 countScale = countScale,
-                                colorScaleLim = colorScaleLim,
-                                edgeWidthLim = edgeWidthLim,
                                 reverseLinkPal = reverseLinkPal,
-                                maxPlotWidth = maxPlotWidth,
-                                minPlotWidth = minPlotWidth)
+                                colorScaleLim = colorScaleLim,
+                                colorScaleMapFun = colorScaleMapFun,
+                                edgeScaleLim = edgeScaleLim,
+                                edgeScaleMapFun = edgeScaleMapFun,
+                                edgeWidthRange = edgeWidthRange)
 
   # Unpack data
   edgeWidth <- radialSetsData$edgeWidth
@@ -158,19 +163,21 @@ buildRadialSetsPlot <- function(setSizes,
   # Draw links between sectors
   for (i in c(1:nSets)) {
     for (j in c(1:nSets)) {
-      if (edgeWidth[i, j] != 0) {
+      if (!is.na(edgeWidthMap[i, j])) {
 
-        # Draw links
-        circlize::circos.link(
-          sets[i],
-          setSizesVec[i] / 2,
-          sets[j],
-          setSizesVec[j] / 2,
-          lwd = edgeWidthMap[i, j],
-          col = edgeColorMap[i, j],
-          w = bezierW,
-          h.ratio = bezierHRatio
-        )
+        if (edgeWidthMap[i, j] != 0) {
+          # Draw links
+          circlize::circos.link(
+            sets[i],
+            setSizesVec[i] / 2,
+            sets[j],
+            setSizesVec[j] / 2,
+            lwd = edgeWidthMap[i, j],
+            col = edgeColorMap[i, j],
+            w = bezierW,
+            h.ratio = bezierHRatio
+          )
+        }
 
       }
     }

@@ -7,9 +7,10 @@
 getRadialSetsData(setSizes, setSizesByDegree, setIntersections,
   setOrder = NULL, linkThickness = "prop",
   linkColor = "prop.relError", linkColorPal = "RdBu",
-  focusSets = "none", countScale = 1, colorScaleLim = c(-1, 1),
-  edgeWidthLim = NULL, reverseLinkPal = FALSE, maxPlotWidth = 15,
-  minPlotWidth = 1)
+  reverseLinkPal = FALSE, focusSets = "none", countScale = 1,
+  colorScaleLim = c(-1, 1), colorScaleMapFun = "squish",
+  edgeScaleLim = c(-Inf, Inf), edgeScaleMapFun = "censor",
+  edgeWidthRange = c(1, 8))
 }
 \arguments{
 \item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
@@ -32,6 +33,8 @@ Partial ordering is performed using \code{\link[forcats]{fct_relevel}}}
 \item{linkColorPal}{Name of color palette to use for link colors. Must match
 palette from \code{\link[RColorBrewer]{brewer.pal}}}
 
+\item{reverseLinkPal}{A logical input specifying if color scale should be reversed}
+
 \item{focusSets}{Character vector specifying name(s) of set(s) to focus on.
 If single set is specified, only links originating from set are shown. If
 multiple sets are specified, only links between sets are shown.}
@@ -39,17 +42,24 @@ multiple sets are specified, only links between sets are shown.}
 \item{countScale}{An optional input to apply multiplicative scaling to set
 sizes}
 
-\item{colorScaleLim}{An optional input to specify scale limits on link colors.
-Values outside limits are mapped to ends of color scale.}
+\item{colorScaleLim}{A numeric vector specifying upper and lower scale limits
+on link colors. Scale limits are enforced using \code{\link[scales]{censor}} or
+\code{\link[scales]{squish}}}
 
-\item{reverseLinkPal}{A logical input specifying if color scale should be reveresed}
+\item{colorScaleMapFun}{A character string specifying whether to use
+\code{\link[scales]{censor}} or \code{\link[scales]{squish}} to enforce color
+scale limits}
 
-\item{maxPlotWidth}{A numeric input specifying maximum line thickness of links}
+\item{edgeScaleLim}{A numeric vector specifying upper and lower scale limits
+on edge thickness. Scale limits are enforced using \code{\link[scales]{censor}} or
+\code{\link[scales]{squish}}}
 
-\item{minPlotWidth}{A numeric input specifying minimum line thickness of links}
+\item{edgeScaleMapFun}{A character string specifying whether to use
+\code{\link[scales]{censor}} or \code{\link[scales]{squish}} to enforce edge
+thickness limits}
 
-\item{edgeScaleLim}{An optional input to specify scale limits on link thickness.
-Values outside limits are mapped to ends of thickness scale.}
+\item{edgeWidthRange}{A numeric vector specifying minimum and maximum line
+thickness of links}
 }
 \value{
 A list with elements:

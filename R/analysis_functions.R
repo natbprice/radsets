@@ -280,13 +280,21 @@ getSetIntersections <- function(df, setNames, idName) {
 #' multiple sets are specified, only links between sets are shown.
 #' @param countScale An optional input to apply multiplicative scaling to set
 #' sizes
-#' @param colorScaleLim An optional input to specify scale limits on link colors.
-#' Values outside limits are mapped to ends of color scale.
-#' @param edgeScaleLim An optional input to specify scale limits on link thickness.
-#' Values outside limits are mapped to ends of thickness scale.
-#' @param reverseLinkPal A logical input specifying if color scale should be reveresed
-#' @param maxPlotWidth A numeric input specifying maximum line thickness of links
-#' @param minPlotWidth A numeric input specifying minimum line thickness of links
+#' @param colorScaleLim A numeric vector specifying upper and lower scale limits
+#' on link colors. Scale limits are enforced using \code{\link[scales]{censor}} or
+#' \code{\link[scales]{squish}}
+#' @param colorScaleMapFun A character string specifying whether to use
+#' \code{\link[scales]{censor}} or \code{\link[scales]{squish}} to enforce color
+#' scale limits
+#' @param edgeScaleLim A numeric vector specifying upper and lower scale limits
+#' on edge thickness. Scale limits are enforced using \code{\link[scales]{censor}} or
+#' \code{\link[scales]{squish}}
+#' @param edgeScaleMapFun A character string specifying whether to use
+#' \code{\link[scales]{censor}} or \code{\link[scales]{squish}} to enforce edge
+#' thickness limits
+#' @param reverseLinkPal A logical input specifying if color scale should be reversed
+#' @param edgeWidthRange A numeric vector specifying minimum and maximum line
+#' thickness of links
 #'
 #' @return A list with elements:
 #' \itemize{
@@ -315,13 +323,14 @@ getRadialSetsData <- function(setSizes,
                            linkThickness = "prop",
                            linkColor = "prop.relError",
                            linkColorPal = "RdBu",
+                           reverseLinkPal = FALSE,
                            focusSets = "none",
                            countScale = 1,
                            colorScaleLim = c(-1, 1),
-                           edgeWidthLim = NULL,
-                           reverseLinkPal = FALSE,
-                           maxPlotWidth = 15,
-                           minPlotWidth = 1) {
+                           colorScaleMapFun = "squish",
+                           edgeScaleLim = c(-Inf, Inf),
+                           edgeScaleMapFun = "censor",
+                           edgeWidthRange = c(1,8)) {
 
   # Reorder sets
   sets <- factor(levels(setIntersections[["set1"]]))
@@ -370,7 +379,7 @@ getRadialSetsData <- function(setSizes,
     select(-set1) %>%
     as.matrix()
   rownames(edgeColor) <- sets
-  diag(edgeColor) <- 0
+  diag(edgeColor) <- NA
 
   # Edges matrix
   edgeWidth <-
@@ -385,55 +394,48 @@ getRadialSetsData <- function(setSizes,
   if(!"none" %in% focusSets) {
     # Remove all links besides focus group
     if(length(focusSets) == 1) {
-      edgeWidth[-which(sets %in% focusSets),] <- 0
-      edgeColor[-which(sets %in% focusSets),] <- 0
+      edgeWidth[-which(sets %in% focusSets),] <- NA
+      edgeColor[-which(sets %in% focusSets),] <- NA
     } else {
-      edgeWidth[-which(sets %in% focusSets), ] <- 0
-      edgeWidth[, -which(sets %in% focusSets)] <- 0
-      edgeColor[-which(sets %in% focusSets), ] <- 0
-      edgeColor[, -which(sets %in% focusSets)] <- 0
+      edgeWidth[-which(sets %in% focusSets), ] <- NA
+      edgeWidth[, -which(sets %in% focusSets)] <- NA
+      edgeColor[-which(sets %in% focusSets), ] <- NA
+      edgeColor[, -which(sets %in% focusSets)] <- NA
     }
   }
   # Remove self-links
   diag(edgeWidth) <- 0
 
-  # Map edge width to thickness
-  edgeWidthMap <- edgeWidth
-  if (length(edgeWidthLim) == 2) {
-    edgeWidthMap[edgeWidth < edgeWidthLim[1]] <- edgeWidthLim[1]
-    edgeWidthMap[edgeWidth > edgeWidthLim[2]] <- edgeWidthLim[2]
+  # Apply edge width limits
+  if (edgeScaleMapFun == "censor") {
+    edgeWidthMap <- scales::censor(edgeWidth, range = edgeScaleLim, only.finite = FALSE)
+  } else if (edgeScaleMapFun == "squish") {
+    edgeWidthMap <- scales::squish(edgeWidth, range = edgeScaleLim, only.finite = FALSE)
   }
 
+  # Remove edge self links
   diag(edgeWidthMap) <- NA
-  maxWidth <- max(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
-  minWidth <- min(edgeWidthMap[!is.infinite(edgeWidthMap)], na.rm = T)
-  edgeWidthMap <- (edgeWidthMap - minWidth) / (maxWidth - minWidth)
-  edgeWidthMap <- edgeWidthMap*(maxPlotWidth - minPlotWidth) + minPlotWidth
-  diag(edgeWidthMap) <- 0
 
-  # Define color palette
-  n <- 100
-  colorVec <- RColorBrewer::brewer.pal(8, linkColorPal)
-  if(reverseLinkPal) {
-    colorVec = rev(colorVec)
-  }
-  linkPal <- colorRampPalette(colorVec)
-  if (length(colorScaleLim) == 2) {
-    scaleBreaks <- c(-Inf,
-                     seq(colorScaleLim[1],
-                         colorScaleLim[2],
-                         length.out = n - 2),
-                     Inf)
-  } else {
-    scaleBreaks = seq(min(edgeColor[!is.infinite(edgeColor)], na.rm = T),
-                      max(edgeColor[!is.infinite(edgeColor)], na.rm = T),
-                      length.out = n - 2)
+  # Scale edge value to line thickness
+  edgeWidthMap <- scales::rescale(edgeWidthMap, to = edgeWidthRange)
+
+  # Apply edge color limits
+  if (colorScaleMapFun == "censor") {
+    edgeColorMap <- scales::censor(edgeColor, range = colorScaleLim, only.finite = FALSE)
+  } else if (colorScaleMapFun == "squish") {
+    edgeColorMap <- scales::squish(edgeColor, range = colorScaleLim, only.finite = FALSE)
   }
 
-  # Map edge color values to colors
-  edgeColorMap <-
-    c(linkPal(n)[as.integer(cut(edgeColor, breaks = scaleBreaks))]) %>%
-    matrix(nrow = nrow(edgeWidth), ncol = ncol(edgeWidth))
+  # Remove edge self links
+  diag(edgeColorMap) <- NA
+
+  # Scale edge value to color thickness
+  colorVec <- scales::brewer_pal(palette = linkColorPal,
+                                 direction = if_else(reverseLinkPal, -1, 1))(8)
+  edgeColorMap <- scales::col_numeric(palette = colorVec,
+                                      domain = colorScaleLim,
+                                      na.color = NA)(edgeColorMap) %>%
+      matrix(nrow = nrow(edgeWidth), ncol = ncol(edgeWidth))
 
   # Maximum edge width
   maxWidth <- signif(max(edgeWidth),1)

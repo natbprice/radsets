@@ -11,9 +11,60 @@ buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections,
   maxLinkThickness = 15, countScale = 1, facing = "clockwise",
   axisLabels = FALSE, legendTitle = NULL, showLegend = FALSE,
   sectorLineWidth = 1, sectorColor = "white", majorTick = FALSE,
-  bezierW = 1, bezierHRatio = 0.75, colorScaleLim = c(-1, 1),
-  edgeWidthLim = NULL, barColor = "darkgrey", reverseLinkPal = FALSE,
-  maxPlotWidth = 5, minPlotWidth = 1)
+  bezierW = 1, bezierHRatio = 0.75, edgeWidthLim = NULL,
+  barColor = "darkgrey", reverseLinkPal = FALSE,
+  colorScaleLim = c(-1, 1), colorScaleMapFun = "squish",
+  edgeScaleLim = c(-Inf, Inf), edgeScaleMapFun = "censor",
+  edgeWidthRange = c(1, 8))
+}
+\arguments{
+\item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
+
+\item{setSizesByDegree}{Data frame of set sizes by degree from
+\code{\link{getSetSizesByDegree}}}
+
+\item{setIntersections}{Data frame of set intersection sizes from
+\code{\link{getSetIntersections}}}
+
+\item{setOrder}{An optional input to specify order of sets (counterclockwise).
+Partial ordering is performed using \code{\link[forcats]{fct_relevel}}}
+
+\item{linkThickness}{Character vector specifying name of variable from
+\code{setIntersections} data frame to map to link thickness}
+
+\item{linkColor}{Character vector specifying name of variable from
+\code{setIntersections} data frame to map to link color}
+
+\item{linkColorPal}{Name of color palette to use for link colors. Must match
+palette from \code{\link[RColorBrewer]{brewer.pal}}}
+
+\item{focusSets}{Character vector specifying name(s) of set(s) to focus on.
+If single set is specified, only links originating from set are shown. If
+multiple sets are specified, only links between sets are shown.}
+
+\item{countScale}{An optional input to apply multiplicative scaling to set
+sizes}
+
+\item{reverseLinkPal}{A logical input specifying if color scale should be reversed}
+
+\item{colorScaleLim}{A numeric vector specifying upper and lower scale limits
+on link colors. Scale limits are enforced using \code{\link[scales]{censor}} or
+\code{\link[scales]{squish}}}
+
+\item{colorScaleMapFun}{A character string specifying whether to use
+\code{\link[scales]{censor}} or \code{\link[scales]{squish}} to enforce color
+scale limits}
+
+\item{edgeScaleLim}{A numeric vector specifying upper and lower scale limits
+on edge thickness. Scale limits are enforced using \code{\link[scales]{censor}} or
+\code{\link[scales]{squish}}}
+
+\item{edgeScaleMapFun}{A character string specifying whether to use
+\code{\link[scales]{censor}} or \code{\link[scales]{squish}} to enforce edge
+thickness limits}
+
+\item{edgeWidthRange}{A numeric vector specifying minimum and maximum line
+thickness of links}
 }
 \description{
 Build radial sets plot

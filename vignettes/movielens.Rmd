@@ -65,7 +65,8 @@ buildRadialSetsPlot(
   linkColorPal = "RdBu",
   reverseLinkPal = T,
   colorScaleLim = c(-1,1),
-  maxPlotWidth = 5,
+  colorScaleMapFun = "squish",
+  edgeWidthRange = c(1,8),
   sectorColor = "white"
 )
 ```
@@ -90,8 +91,9 @@ buildRadialSetsPlot(
   reverseLinkPal = T,
   setOrder = optOrder[c(14:19,1:13)],
   colorScaleLim = c(-1,1),
-  maxPlotWidth = 5,
-  sectorColor = "white",
+  colorScaleMapFun = "squish",
+  edgeWidthRange = c(1,8),
+  sectorColor = "white"
 )
 ```
 
@@ -108,7 +110,8 @@ buildRadialSetsPlot(
   reverseLinkPal = T,
   setOrder = optOrder,
   colorScaleLim = c(-1,1),
-  maxPlotWidth = 5,
+  colorScaleMapFun = "squish",
+  edgeWidthRange = c(1,8),
   sectorColor = "white"
 )
 dev.off()
