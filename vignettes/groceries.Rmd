@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 Apply limits to width and thickness scales. Drop any sets that do not have links after limits are applied.
 
-```{r basicPlot, fig.width = 7, fig.height = 7, fig.cap = "Frequent grocery purchases"}
+```{r basicPlot, dev = 'svg', fig.width = 7, fig.height = 7, fig.cap = "Frequent grocery purchases"}
 
 data("groceries")
 
@@ -63,33 +63,9 @@ buildRadialSetsPlot(
   edgeScaleLim = c(0.05,1),
   edgeScaleMapFun = "censor",
   sectorColor = "white",
-  sectorLabelFontSize = 0.8,
+  sectorLabelFontSize = 0.5,
   setOrder = optOrder,
   dropSets = T
 )
-```
-
-Plots should be saved to a vector improve display.
-```{r, eval = F}
-svg("myPlot.svg", width = 12, height = 12)
-buildRadialSetsPlot(
-  setSizes,
-  setSizesByDegree,
-  setIntersections,
-  linkThickness = "prop",
-  linkColor = "prop.relError",
-  linkColorPal = "YlOrRd",
-  reverseLinkPal = F,
-  colorScaleLim = c(0.5,1),
-  colorScaleMapFun = "censor",
-  edgeScaleLim = c(0.05,1),
-  edgeScaleMapFun = "censor",
-  sectorColor = "white",
-  # focusSets = "frankfurter",
-  sectorLabelFontSize = 0.8,
-  setOrder = optOrder,
-  dropSets = T
-)
-dev.off()
 ```
 

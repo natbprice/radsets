@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 Create a plot 
 
-```{r basicPlot, fig.width = 7, fig.height = 7, fig.cap = "Sets in alphabetical order"}
+```{r basicPlot, dev = 'svg', fig.width = 7, fig.height = 7, fig.cap = "Sets in alphabetical order"}
 
 # Load sample data
 data(movieSets)
@@ -80,7 +80,7 @@ optOrder <- optimizeLinkOrder(setSizes,
                               linkThickness = "prop")
 ```
 
-```{r, fig.width = 7, fig.height = 7, fig.cap = "Optimal set order"}
+```{r, dev = 'svg', fig.width = 7, fig.height = 7, fig.cap = "Optimal set order"}
 buildRadialSetsPlot(
   setSizes,
   setSizesByDegree,
@@ -97,25 +97,6 @@ buildRadialSetsPlot(
 )
 ```
 
-Plots should be saved to a vector improve display.
-```{r, eval = F}
-svg("myPlot.svg", width = 12, height = 12)
-buildRadialSetsPlot(
-  setSizes,
-  setSizesByDegree,
-  setIntersections,
-  linkThickness = "prop",
-  linkColor = "prop.relError",
-  linkColorPal = "RdBu",
-  reverseLinkPal = T,
-  setOrder = optOrder,
-  colorScaleLim = c(-1,1),
-  colorScaleMapFun = "squish",
-  edgeWidthRange = c(1,8),
-  sectorColor = "white"
-)
-dev.off()
-```
 
 
 
