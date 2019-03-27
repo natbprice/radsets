@@ -45,7 +45,7 @@ getSetSizes <- function(df, setNames) {
   setSizes <- df %>%
     summarize_at(setNames, sum) %>%
     tidyr::gather(set, N) %>%
-    mutate(set = as.factor(set))
+    mutate(set = factor(set, levels = setNames))
 
   return(setSizes)
 
@@ -113,11 +113,7 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
     mutate(degree = min(sum(membership), maxDegree)) %>%
     ungroup() %>%
     filter(degree != 0) %>%
-    mutate(degreeLabel = if_else(degree == maxDegree,
-                                 paste0(degree, "+"),
-                                 as.character(degree)),
-           degreeLabel = forcats::fct_reorder(degreeLabel, degree)) %>%
-    group_by(set, degree, degreeLabel) %>%
+    group_by(set, degree) %>%
     summarize(N = sum(membership)) %>%
     group_by(set) %>%
     mutate(prop = N/sum(N)) %>%
@@ -199,18 +195,32 @@ getSetIntersections <- function(df, setNames, idName) {
     tidyr::gather(set, membership, !!!syms(setNames)) %>%
     filter(membership == 1) %>%
     # Convert set to factor
-    mutate(set = as.factor(set)) %>%
+    mutate(set = factor(set, levels = setNames)) %>%
     # Drop any extra variables
     select(set, Ntotal, !!sym(idName)) %>%
     # Nest data by set
     tidyr::nest(-set, -Ntotal)
 
-  # Calculate edge data
-  edges <-
+  # Create upper triangular matrix
+  edgeMat <-
+    matrix(
+      0,
+      nrow = length(setNames),
+      ncol = length(setNames),
+      dimnames = list(setNames, setNames)
+    )
+  edgeMat[upper.tri(edgeMat, diag = TRUE)] <- 1
+
+  # Perform intersections/unions
+  setInter <-
     # Get all set combinations
-    tibble(set1 = as.factor(setNames),
-           set2 = as.factor(setNames)) %>%
-    tidyr::expand(set1, set2) %>%
+    as_tibble(edgeMat) %>%
+    mutate(set1 = rownames(edgeMat)) %>%
+    gather(set2, value, -set1) %>%
+    mutate(set1 = factor(set1, levels = setNames),
+           set2 = factor(set2, levels = setNames)) %>%
+    filter(value == 1) %>%
+    select(-value) %>%
     # Join items in each set
     left_join(nestedSets, by = c("set1" = "set")) %>%
     left_join(nestedSets %>% select(-Ntotal), by = c("set2" = "set")) %>%
@@ -226,7 +236,23 @@ getSetIntersections <- function(df, setNames, idName) {
       Ntotal,
       Ninter = map_dbl(setIntersection, nrow),
       Nunion = map_dbl(setUnion, nrow)
-    ) %>%
+    )
+
+  # Complete set intersections
+  setInterFull <-
+    full_join(
+      setInter,
+      setInter %>% rename(set1 = set2, set2 = set1),
+      by = c("set1", "set2", "Ntotal", "Ninter", "Nunion")
+    )
+
+  # Calculate edge values
+  edges <-
+    tibble(set1 = factor(setNames, levels = setNames),
+           set2 = factor(setNames, levels = setNames)) %>%
+    tidyr::expand(set1, set2) %>%
+    # Join intersections/unions
+    left_join(setInterFull, by = c("set1", "set2")) %>%
     # Join set sizes
     left_join(setSizes %>% rename(N1 = N), by = c("set1" = "set")) %>%
     left_join(setSizes %>% rename(N2 = N), by = c("set2" = "set")) %>%
@@ -251,8 +277,8 @@ getSetIntersections <- function(df, setNames, idName) {
            prop.relError = prop.error / prop,
            prop1.relError = prop1.error / prop1
     ) %>%
-    mutate(set1 = as.factor(set1),
-           set2 = as.factor(set2))
+    mutate(set1 = factor(set1, levels = setNames),
+           set2 = factor(set2, levels = setNames))
 
   return(edges)
 
