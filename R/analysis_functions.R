@@ -182,6 +182,15 @@ getSetIntersections <- function(df, setNames, idName) {
     ))
   }
 
+  # Drop any empty sets
+  if(any(colSums(df[setNames]) == 0)) {
+    dropSets <- which(colSums(df[setNames]) == 0)
+    warning(paste("Dropping empty sets:",
+                  paste(setNames[dropSets], collapse = ", ")))
+    setNames <- setNames[-dropSets]
+    df <- df[c(idName, setNames)]
+  }
+
   # Calculate set sizes
   setSizes <-
     getSetSizes(df, setNames)
