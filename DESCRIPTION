@@ -18,7 +18,8 @@ Imports:
     magrittr,
     forcats,
     purrr,
-    scales
+    scales,
+    glue
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Suggests: 

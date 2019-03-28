@@ -7,12 +7,7 @@
 #'
 #' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
 #'
-#' @import shiny
-#' @import circlize
 #' @import dplyr
-#' @importFrom glue glue
-#' @importFrom purrr map pmap
-#' @importFrom tidyr unnest
 #'
 #' @export
 getRadialSetsMetadata <- function(radialSetsData,
@@ -31,21 +26,27 @@ getRadialSetsMetadata <- function(radialSetsData,
     mutate(
       theta = purrr::map(
         set,
-        ~ get.cell.meta.data("xplot", sector.index = .x, track.index = 2) %>%
+        ~ circlize::get.cell.meta.data("xplot",
+                                       sector.index = .x,
+                                       track.index = 2) %>%
           t() %>%
           as_tibble() %>%
           rename(theta1 = V1, theta2 = V2)
       ),
       r = purrr::map(
         set,
-        ~ get.cell.meta.data("yplot", sector.index = .x, track.index = 2) %>%
+        ~ circlize::get.cell.meta.data("yplot",
+                                       sector.index = .x,
+                                       track.index = 2) %>%
           t() %>%
           as_tibble() %>%
           rename(r1 = V1, r2 = V2)
       ),
       s = purrr::map(
         set,
-        ~ get.cell.meta.data("xlim", sector.index = .x, track.index = 2) %>%
+        ~ circlize::get.cell.meta.data("xlim",
+                                       sector.index = .x,
+                                       track.index = 2) %>%
           t() %>%
           as_tibble() %>%
           rename(s1 = min.data, s2 = max.data)
@@ -132,10 +133,7 @@ getRadialSetsMetadata <- function(radialSetsData,
 #'
 #' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
 #'
-#' @import shiny
-#' @import snakecase
 #' @import dplyr
-#' @importFrom glue glue
 #'
 #' @export
 getPointerLoc <- function(metadata,
@@ -253,8 +251,6 @@ getPointerLoc <- function(metadata,
 #'
 #' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
 #'
-#' @import shiny
-#' @import snakecase
 #' @import dplyr
 #' @importFrom glue glue
 #'
@@ -378,9 +374,9 @@ createRadialsetsTooltip <- function(setSizes,
                   "left:", leftPx + 2, "px; top:", topPx + 2, "px;")
 
   # Create tooltip as wellPanel
-  tooltipPanel <- wellPanel(
+  tooltipPanel <- shiny::wellPanel(
     style = style,
-    p(HTML(tooltipText))
+    shiny::p(shiny::HTML(tooltipText))
   )
 
   return(tooltipPanel)
