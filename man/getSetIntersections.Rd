@@ -41,9 +41,7 @@ input should correspond to the binary indicator columns in the data frame.
 \examples{
 # Define set names
 data("movieSets")
-setNames <- movieSets \%>\%
-  select(Action:Western) \%>\%
-  colnames()
+setNames <- colnames(movieSets[,-c(1:8)])
 
 # Calculate set sizes
 getSetIntersections(movieSets, setNames, "movieId")
