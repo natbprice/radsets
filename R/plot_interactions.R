@@ -8,24 +8,22 @@
 #' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
 #'
 #' @import shiny
-#' @import snakecase
+#' @import circlize
 #' @import dplyr
 #' @importFrom glue glue
 #' @importFrom purrr map pmap
 #' @importFrom tidyr unnest
 #'
 #' @export
-getRadialSetsMetadata <- function(radialSetsData, bezierW = 1, bezierHRatio = 0.5) {
+getRadialSetsMetadata <- function(radialSetsData,
+                                  bezierW = 1,
+                                  bezierHRatio = 0.5) {
 
   # Unpack data
   edgeWidth <- radialSetsData$edgeWidth
   sets <- radialSetsData$sets
-  nSets <- radialSetsData$nSets
   maxDegree <- radialSetsData$maxDegree
   degreeMat <- radialSetsData$degreeMat
-  setSizesVec <- radialSetsData$setSizesVec
-  maxWidth <- radialSetsData$maxWidth
-
 
   # Sector data -----------------------------------------------------------
   sectorData <-
@@ -72,15 +70,15 @@ getRadialSetsMetadata <- function(radialSetsData, bezierW = 1, bezierHRatio = 0.
                        r1.sec = r1,
                        r2.sec = r2),
               by = "set") %>%
-    mutate(thetaCenter = theta2.sec + (theta1.sec - theta2.sec)/2,
-           sCenter = s1.sec + (s2.sec - s1.sec)/2,
-           sToTheta= (theta1.sec - theta2.sec) / (s2.sec - s1.sec),
-           theta1 = thetaCenter + (s*sToTheta)/2,
-           theta2 = thetaCenter - (s*sToTheta)/2,
-           s1 = sCenter - s/2,
-           s2 = sCenter + s/2,
-           r1 = r2.sec - degree*((r2.sec - r1.sec)/maxDegree),
-           r2 = r2.sec - (degree-1)*((r2.sec - r1.sec)/maxDegree)) %>%
+    mutate(thetaCenter = theta2.sec + (theta1.sec - theta2.sec) / 2,
+           sCenter = s1.sec + (s2.sec - s1.sec) / 2,
+           sToTheta = (theta1.sec - theta2.sec) / (s2.sec - s1.sec),
+           theta1 = thetaCenter + (s * sToTheta) / 2,
+           theta2 = thetaCenter - (s * sToTheta) / 2,
+           s1 = sCenter - s / 2,
+           s2 = sCenter + s / 2,
+           r1 = r2.sec - degree * ( (r2.sec - r1.sec) / maxDegree),
+           r2 = r2.sec - (degree - 1) * ( (r2.sec - r1.sec) / maxDegree)) %>%
     select(set, degree, theta1, theta2, r1, r2, s1, s2)
 
   # Link data -------------------------------------------------------------
@@ -159,8 +157,7 @@ getPointerLoc <- function(metadata,
   linkData <- metadata$linkData
 
   # Map pointer to plot dat -----------------------------------------------
-  # browser()
-  if(transCoord) {
+  if (transCoord) {
     imageDomain <- pointer$domain
     xImage <- pointer$x
     yImage <- pointer$y
@@ -181,14 +178,14 @@ getPointerLoc <- function(metadata,
   pointerLoc$y <- y
 
   # Convert pointer location to polar coordinates
-  r <- sqrt(x^2+y^2)
-  theta <- atan2(y,x)
+  r <- sqrt(x ^ 2 + y ^ 2)
+  theta <- atan2(y, x)
 
   # Convert angle in radians to degrees
-  if (theta>0){
-    theta <- theta*(180/pi)
+  if (theta > 0){
+    theta <- theta * (180 / pi)
   } else{
-    theta <- 360+theta*(180/pi)
+    theta <- 360 + theta * (180 / pi)
   }
 
   # Check radius
@@ -197,7 +194,7 @@ getPointerLoc <- function(metadata,
     # Match pointer to link
     linkMatch <-
       linkData %>%
-      mutate(dist = sqrt((x - pointer$x)^2 + (y - pointer$y)^2)) %>%
+      mutate(dist = sqrt( (x - pointer$x) ^ 2 + (y - pointer$y) ^ 2)) %>%
       arrange(dist) %>%
       filter(dist <= 0.02) %>%
       filter(row_number() == 1)
@@ -271,7 +268,7 @@ createRadialsetsTooltip <- function(setSizes,
 
   location <- pointerLoc$location
   pointer <- pointerLoc$pointer
-  if(is.null(location)) {
+  if (is.null(location)) {
    return(NULL)
   }
 
@@ -300,7 +297,8 @@ createRadialsetsTooltip <- function(setSizes,
     if (focusSet == "none") {
       if (linkThickness %in% c("prop", "prop1", "prop.relError")) {
         label <-
-          glue("{overlap}% of all {name1} and {name2} </br>items belong to both sets")
+          glue("{overlap}% of all {name1} and {name2} </br>
+               items belong to both sets")
       } else {
         label <-
           glue("{overlap} items belong to both</br>{name1} and {name2}")
@@ -331,7 +329,7 @@ createRadialsetsTooltip <- function(setSizes,
       mutate(prop = round(prop * 100)) %>%
       pull(prop)
 
-    # If pointer is on histogram bar, display bar value, else display sector total
+    # Eisplay bar value or display sector total
     if (location == "bar") {
       if (pointerLoc$degree == maxDegree) {
         tooltipText <- glue(
@@ -363,16 +361,21 @@ createRadialsetsTooltip <- function(setSizes,
   }
 
   # Calculate point position INSIDE the image as percent of total dimensions
-  left_pct <- (pointer$x - pointer$domain$left) / (pointer$domain$right - pointer$domain$left)
-  top_pct <- (pointer$domain$top - pointer$y) / (pointer$domain$top - pointer$domain$bottom)
+  leftPct <- (pointer$x - pointer$domain$left) /
+    (pointer$domain$right - pointer$domain$left)
+  topPct <- (pointer$domain$top - pointer$y) /
+    (pointer$domain$top - pointer$domain$bottom)
 
   # Calculate distance from left and bottom side of the picture in pixels
-  left_px <- pointer$range$left + left_pct * (pointer$range$right - pointer$range$left)
-  top_px <- pointer$range$top + top_pct * (pointer$range$bottom - pointer$range$top)
+  leftPx <- pointer$range$left +
+    leftPct * (pointer$range$right - pointer$range$left)
+  topPx <- pointer$range$top +
+    topPct * (pointer$range$bottom - pointer$range$top)
 
   # Create style property fot tooltip (transparent background, tooltip on top)
-  style <- paste0("position:absolute; z-index:100; background-color: rgba(245, 245, 245, 0.85); ",
-                  "left:", left_px + 2, "px; top:", top_px + 2, "px;")
+  style <- paste0("position:absolute; z-index:100;
+                  background-color: rgba(245, 245, 245, 0.85); ",
+                  "left:", leftPx + 2, "px; top:", topPx + 2, "px;")
 
   # Create tooltip as wellPanel
   tooltipPanel <- wellPanel(
