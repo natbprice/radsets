@@ -2,16 +2,10 @@
 #'
 #' @return shiny application object
 #'
-#' @examples 
+#' @examples
 #' \donttest{
 #' launchApp()
 #' }
-#'
-#' @importFrom magrittr %>% 
-#' @import shiny
-#' @import dplyr
-#' @import circlize
-#' @import RColorBrewer
 #'
 #' @export launchApp
 launchApp <- function() {
