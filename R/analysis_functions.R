@@ -23,7 +23,6 @@
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
-#' @importFrom tidyr gather
 #'
 #' @export
 getSetSizes <- function(df, setNames) {
@@ -87,7 +86,6 @@ getSetSizes <- function(df, setNames) {
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
-#' @importFrom forcats fct_reorder
 #'
 #' @export
 getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
@@ -163,8 +161,6 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
-#' @importFrom tidyr nest gather expand
-#' @importFrom purrr map2 map_dbl
 #'
 #' @export
 getSetIntersections <- function(df, setNames, idName) {
@@ -225,7 +221,7 @@ getSetIntersections <- function(df, setNames, idName) {
     # Get all set combinations
     as_tibble(edgeMat) %>%
     mutate(set1 = rownames(edgeMat)) %>%
-    gather(set2, value, -set1) %>%
+    tidry::gather(set2, value, -set1) %>%
     mutate(set1 = factor(set1, levels = setNames),
            set2 = factor(set2, levels = setNames)) %>%
     filter(value == 1) %>%
@@ -235,16 +231,16 @@ getSetIntersections <- function(df, setNames, idName) {
     left_join(nestedSets %>% select(-Ntotal), by = c("set2" = "set")) %>%
     # Perform intersections and unions between sets
     mutate(
-      setIntersection = map2(data.x, data.y, intersect),
-      setUnion = map2(data.x, data.y, union)
+      setIntersection = purrr::map2(data.x, data.y, intersect),
+      setUnion = purrr::map2(data.x, data.y, union)
     ) %>%
     # Count number of items in each intersection and union
     transmute(
       set1,
       set2,
       Ntotal,
-      Ninter = map_dbl(setIntersection, nrow),
-      Nunion = map_dbl(setUnion, nrow)
+      Ninter = purrr::map_dbl(setIntersection, nrow),
+      Nunion = purrr::map_dbl(setUnion, nrow)
     )
 
   # Complete set intersections
@@ -348,9 +344,7 @@ getSetIntersections <- function(df, setNames, idName) {
 #' }
 #'
 #' @import dplyr
-#' @importFrom tidyr spread complete
-#' @importFrom forcats fct_relevel
-#' @importFrom RColorBrewer brewer.pal
+#' @importFrom magrittr %>%
 #'
 #' @export
 getRadialSetsData <- function(setSizes,
@@ -413,7 +407,7 @@ getRadialSetsData <- function(setSizes,
     setIntersections %>%
     arrange(set1, set2) %>%
     select(set1, set2, linkColor) %>%
-    spread(set2, linkColor) %>%
+    tidyr::spread(set2, linkColor) %>%
     select(-set1) %>%
     as.matrix()
   rownames(edgeColor) <- sets
@@ -424,7 +418,7 @@ getRadialSetsData <- function(setSizes,
     setIntersections %>%
     arrange(set1, set2) %>%
     select(set1, set2, linkThickness) %>%
-    spread(set2, linkThickness) %>%
+    tidyr::spread(set2, linkThickness) %>%
     select(-set1) %>%
     as.matrix()
   rownames(edgeWidth) <- sets

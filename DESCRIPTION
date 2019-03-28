@@ -13,12 +13,18 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports:
-    circlize,
-    randomcoloR, 
-    knitr, 
-    tidyverse
+    dplyr,
+    tidyr,
+    magrittr,
+    forcats,
+    purrr,
+    scales
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Suggests: 
     rmarkdown,
-    testthat
+    testthat,
+    shiny,
+    ggplot2
+Depends: 
+    circlize
