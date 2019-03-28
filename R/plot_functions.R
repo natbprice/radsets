@@ -34,7 +34,7 @@ buildRadialSetsPlot <- function(setSizes,
                                 colorScaleMapFun = "squish",
                                 edgeScaleLim = c(-Inf, Inf),
                                 edgeScaleMapFun = "censor",
-                                edgeWidthRange = c(1,8),
+                                edgeWidthRange = c(1, 8),
                                 dropSets = FALSE) {
 
 
@@ -58,7 +58,6 @@ buildRadialSetsPlot <- function(setSizes,
                                 dropSets = dropSets)
 
   # Unpack data
-  edgeWidth <- radialSetsData$edgeWidth
   edgeWidthMap <- radialSetsData$edgeWidthMap
   sets <- radialSetsData$sets
   nSets <- radialSetsData$nSets
@@ -69,11 +68,11 @@ buildRadialSetsPlot <- function(setSizes,
   edgeColorMap <- radialSetsData$edgeColorMap
 
   # Define color pallette
-  if(length(barColor) == 1) {
+  if (length(barColor) == 1) {
     barColor <- rep(barColor, nSets)
   }
 
-  par(mar=rep(0,4))
+  par(mar = rep(0, 4))
 
   # Initialize circos with 2 tracks
   circlize::circos.clear()
@@ -97,10 +96,10 @@ buildRadialSetsPlot <- function(setSizes,
     ylim = c(0, 1),
     track.height = 0.3,
     panel.fun = function(x, y) {
-      sector.index = circlize::get.cell.meta.data("sector.index")
-      xlim = circlize::get.cell.meta.data("xlim")
-      rlim = circlize::get.cell.meta.data("ylim")
-      circlize::circos.text(xlim[2]/2,
+      sector.index <- circlize::get.cell.meta.data("sector.index")
+      xlim <- circlize::get.cell.meta.data("xlim")
+      rlim <- circlize::get.cell.meta.data("ylim")
+      circlize::circos.text(xlim[2] / 2,
                             rlim[1],
                             adj = c(0, 0.5),
                             sector.index,
@@ -118,9 +117,7 @@ buildRadialSetsPlot <- function(setSizes,
     bg.lwd = sectorLineWidth,
     bg.col = sectorColor,
     panel.fun = function(x, y) {
-      sector.index = circlize::get.cell.meta.data("sector.index")
-      xlim = circlize::get.cell.meta.data("xlim")
-      ylim = circlize::get.cell.meta.data("ylim")
+      sector.index <- circlize::get.cell.meta.data("sector.index")
 
       # Create axis
       circlize::circos.axis(labels.cex = axisLabelFontSize,
@@ -144,13 +141,13 @@ buildRadialSetsPlot <- function(setSizes,
         zero <- setSizesVec[i] / 2
 
         # Vector of x coordinates
-        x1 = seq(zero - dx, zero + dx, (2 * dx) / 1)
+        x1 <- seq(zero - dx, zero + dx, (2 * dx) / 1)
 
         # Vector of x coordinates out and back
-        d1 = c(x1, rev(x1))
+        d1 <- c(x1, rev(x1))
 
         # Repeated y coordinates
-        d2 = c(rep(y1, length(x1)),
+        d2 <- c(rep(y1, length(x1)),
                rep(y1 - 1, length(x1)))
 
         # Draw bars of non-zero length
@@ -186,19 +183,19 @@ buildRadialSetsPlot <- function(setSizes,
   }
 
   if (linkThickness == "percent") {
-    legendText <- paste0(seq(1,0.25,-0.25)*maxWidth, "%")
+    legendText <- paste0(seq(1, 0.25, -0.25) * maxWidth, "%")
   } else {
-    legendText <- paste0(seq(1,0.25,-0.25)*maxWidth*(1/countScale))
+    legendText <- paste0(seq(1, 0.25, -0.25) * maxWidth * (1 / countScale))
   }
 
   # Lengend showing link thickness
-  if(showLegend){
+  if (showLegend){
   legend(
     "topleft",
     inset = 0.05,
     cex = sectorLabelFontSize,
     title = legendTitle,
-    lwd = maxLinkThickness * seq(1,0.25,-0.25),
+    lwd = maxLinkThickness * seq(1, 0.25, -0.25),
     col = linkColor,
     legend = legendText,
     bty = "n"
