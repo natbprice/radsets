@@ -2,9 +2,6 @@
 #'
 #' @inheritParams getRadialSetsData
 #'
-#' @import circlize
-#' @importFrom randomcoloR randomColor
-#'
 #' @export
 buildRadialSetsPlot <- function(setSizes,
                                 setSizesByDegree,
