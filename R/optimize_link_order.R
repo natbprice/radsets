@@ -52,13 +52,15 @@ optimizeLinkOrder <- function(setSizes,
             arrange(set) %>%
             mutate(Ntotal = sum(N),
                    pad = 1) %>%
-            mutate(theta = N/Ntotal * (360 - sum(pad)),
-                   r = 0.47,
-                   theta2 = 360 - (cumsum(theta) + cumsum(pad) - 1),
-                   theta1 = theta2 + theta,
-                   thetaC = theta1 + (theta2 - theta1)/2,
-                   xc = r*cos(thetaC*(pi/180)),
-                   yc = r*sin(thetaC*(pi/180))) %>%
+            mutate(
+              theta = N / Ntotal * (360 - sum(pad)),
+              r = 0.47,
+              theta2 = 360 - (cumsum(theta) + cumsum(pad) - 1),
+              theta1 = theta2 + theta,
+              thetaC = theta1 + (theta2 - theta1) / 2,
+              xc = r * cos(thetaC * (pi / 180)),
+              yc = r * sin(thetaC * (pi / 180))
+            ) %>%
             mutate(set = as.character(set))
 
           # Calculate ink used to plot links
@@ -70,12 +72,16 @@ optimizeLinkOrder <- function(setSizes,
             select(set1, set2, w = linkThickness) %>%
             mutate(set1 = as.character(set1),
                    set2 = as.character(set2)) %>%
-            left_join(nodes %>% select(set, x1 = xc, y1 = yc), by = c("set1"="set")) %>%
-            left_join(nodes %>% select(set, x2 = xc, y2 = yc), by = c("set2"="set")) %>%
-            mutate(dx = x2 - x1,
-                   dy = x2 - x1,
-                   s = sqrt(dx^2 + dy^2),
-                   ink = s*w) %>%
+            left_join(nodes %>% select(set, x1 = xc, y1 = yc),
+                      by = c("set1" = "set")) %>%
+            left_join(nodes %>% select(set, x2 = xc, y2 = yc),
+                      by = c("set2" = "set")) %>%
+            mutate(
+              dx = x2 - x1,
+              dy = x2 - x1,
+              s = sqrt(dx ^ 2 + dy ^ 2),
+              ink = s * w
+            ) %>%
             summarize(ink = sum(ink)) %>%
             pull(ink)
         }
@@ -94,5 +100,3 @@ optimizeLinkOrder <- function(setSizes,
 
     return(optOrder)
 }
-
-
