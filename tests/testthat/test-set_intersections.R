@@ -48,7 +48,7 @@ complexSets <-
        set = c(rep("A",length(setA)), rep("B",length(setB)), rep("C",length(setC))),
        value = 1) %>%
   distinct() %>%
-  spread(set, value, fill = 0)
+  tidyr::spread(set, value, fill = 0)
 
 test_that("set intersection complex", {
   expect_equal(getSetIntersections(complexSets, setNames, "item") %>%
