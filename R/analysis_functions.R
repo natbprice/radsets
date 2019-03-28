@@ -14,9 +14,7 @@
 #' @examples
 #' # Define set names
 #' data("movieSets")
-#' setNames <- movieSets %>%
-#'   select(Action:Western) %>%
-#'   colnames()
+#' setNames <- colnames(movieSets[,-c(1:8)])
 #'
 #' # Calculate set sizes
 #' getSetSizes(movieSets, setNames)
@@ -74,9 +72,7 @@ getSetSizes <- function(df, setNames) {
 #' @examples
 #' # Define set names
 #' data("movieSets")
-#' setNames <- movieSets  %>%
-#'   select(Action:Western) %>%
-#'   colnames()
+#' setNames <- setNames <- colnames(movieSets[,-c(1:8)])
 #'
 #' # Calculate set sizes
 #' getSetSizesByDegree(movieSets , setNames, "movieId")
@@ -152,9 +148,7 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
 #' @examples
 #' # Define set names
 #' data("movieSets")
-#' setNames <- movieSets %>%
-#'   select(Action:Western) %>%
-#'   colnames()
+#' setNames <- colnames(movieSets[,-c(1:8)])
 #'
 #' # Calculate set sizes
 #' getSetIntersections(movieSets, setNames, "movieId")
@@ -221,7 +215,7 @@ getSetIntersections <- function(df, setNames, idName) {
     # Get all set combinations
     as_tibble(edgeMat) %>%
     mutate(set1 = rownames(edgeMat)) %>%
-    tidry::gather(set2, value, -set1) %>%
+    tidyr::gather(set2, value, -set1) %>%
     mutate(set1 = factor(set1, levels = setNames),
            set2 = factor(set2, levels = setNames)) %>%
     filter(value == 1) %>%
