@@ -287,7 +287,8 @@ getSetIntersections <- function(df, setNames, idName) {
            prop1.relError = prop1.error / prop1
     ) %>%
     mutate(set1 = factor(set1, levels = setNames),
-           set2 = factor(set2, levels = setNames))
+           set2 = factor(set2, levels = setNames)) %>%
+    mutate_if(is.numeric, as.double)
 
   return(edges)
 
