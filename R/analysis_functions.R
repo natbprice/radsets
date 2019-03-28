@@ -29,7 +29,7 @@
 getSetSizes <- function(df, setNames) {
 
   # Check df class
-  if(!("tbl" %in% class(df) | "data.frame" %in% class(df))) {
+  if (!("tbl" %in% class(df) | "data.frame" %in% class(df))) {
     stop("Input 'df' should be a data frame")
   }
 
@@ -93,7 +93,7 @@ getSetSizes <- function(df, setNames) {
 getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
 
   # Check df class
-  if(!("tbl" %in% class(df) | "data.frame" %in% class(df))) {
+  if (!("tbl" %in% class(df) | "data.frame" %in% class(df))) {
     stop("Input 'df' should be a data frame")
   }
 
@@ -116,7 +116,7 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
     group_by(set, degree) %>%
     summarize(N = sum(membership)) %>%
     group_by(set) %>%
-    mutate(prop = N/sum(N)) %>%
+    mutate(prop = N / sum(N)) %>%
     ungroup() %>%
     mutate(set = as.factor(set))
 
@@ -170,7 +170,7 @@ getSetSizesByDegree <- function(df, setNames, idName, maxDegree = 4) {
 getSetIntersections <- function(df, setNames, idName) {
 
   # Check df class
-  if(!("tbl" %in% class(df) | "data.frame" %in% class(df))) {
+  if (!("tbl" %in% class(df) | "data.frame" %in% class(df))) {
     stop("Input 'df' should be a data frame")
   }
 
@@ -183,7 +183,7 @@ getSetIntersections <- function(df, setNames, idName) {
   }
 
   # Drop any empty sets
-  if(any(colSums(df[setNames]) == 0)) {
+  if (any(colSums(df[setNames]) == 0)) {
     dropSets <- which(colSums(df[setNames]) == 0)
     warning(paste("Dropping empty sets:",
                   paste(setNames[dropSets], collapse = ", ")))
@@ -271,11 +271,11 @@ getSetIntersections <- function(df, setNames, idName) {
            prop2 = Ninter / N2) %>%
     # Calculate difference in observed vs predicted set sizes
     mutate(Ninter.pred = if_else(set1 != set2,
-                                 Ntotal*((N1 / Ntotal) * (N2 / Ntotal)),
+                                 Ntotal * ( (N1 / Ntotal) * (N2 / Ntotal)),
                                  as.numeric(N1)),
            Nunion.pred = if_else(set1 != set2,
-                                 Ntotal*((N1 / Ntotal) + (N2 / Ntotal) -
-                                           ((N1 / Ntotal) * (N2 / Ntotal))),
+                                 Ntotal * ( (N1 / Ntotal) + (N2 / Ntotal) -
+                                           ( (N1 / Ntotal) * (N2 / Ntotal))),
                                  as.numeric(N1)),
            prop.pred = Ninter.pred / Nunion.pred,
            prop1.pred = Ninter.pred / N1,
@@ -367,12 +367,12 @@ getRadialSetsData <- function(setSizes,
                            colorScaleMapFun = "squish",
                            edgeScaleLim = c(-Inf, Inf),
                            edgeScaleMapFun = "censor",
-                           edgeWidthRange = c(1,8),
+                           edgeWidthRange = c(1, 8),
                            dropSets = FALSE) {
 
   # Reorder sets
   sets <- factor(levels(setIntersections[["set1"]]))
-  if(!is.null(setOrder)) {
+  if (!is.null(setOrder)) {
     sets <- forcats::fct_relevel(sets, setOrder)
     setIntersections <-
       setIntersections %>%
@@ -393,7 +393,7 @@ getRadialSetsData <- function(setSizes,
     select(set, degree, N) %>%
     mutate(N = N * countScale) %>%
     mutate(degree = factor(degree, levels = 1:max(degree))) %>%
-    tidyr::complete(set, degree, fill = list(N=0)) %>%
+    tidyr::complete(set, degree, fill = list(N = 0)) %>%
     tidyr::spread(degree, N) %>%
     select(-set) %>%
     as.matrix()
@@ -429,11 +429,11 @@ getRadialSetsData <- function(setSizes,
     as.matrix()
   rownames(edgeWidth) <- sets
 
-  if(!"none" %in% focusSets) {
+  if (!"none" %in% focusSets) {
     # Remove all links besides focus group
-    if(length(focusSets) == 1) {
-      edgeWidth[-which(sets %in% focusSets),] <- NA
-      edgeColor[-which(sets %in% focusSets),] <- NA
+    if (length(focusSets) == 1) {
+      edgeWidth[-which(sets %in% focusSets), ] <- NA
+      edgeColor[-which(sets %in% focusSets), ] <- NA
     } else {
       edgeWidth[-which(sets %in% focusSets), ] <- NA
       edgeWidth[, -which(sets %in% focusSets)] <- NA
@@ -446,9 +446,13 @@ getRadialSetsData <- function(setSizes,
 
   # Apply edge width limits
   if (edgeScaleMapFun == "censor") {
-    edgeWidthMap <- scales::censor(edgeWidth, range = edgeScaleLim, only.finite = FALSE)
+    edgeWidthMap <- scales::censor(edgeWidth,
+                                   range = edgeScaleLim,
+                                   only.finite = FALSE)
   } else if (edgeScaleMapFun == "squish") {
-    edgeWidthMap <- scales::squish(edgeWidth, range = edgeScaleLim, only.finite = FALSE)
+    edgeWidthMap <- scales::squish(edgeWidth,
+                                   range = edgeScaleLim,
+                                   only.finite = FALSE)
   }
 
   # Remove edge self links
@@ -459,9 +463,13 @@ getRadialSetsData <- function(setSizes,
 
   # Apply edge color limits
   if (colorScaleMapFun == "censor") {
-    edgeColorMap <- scales::censor(edgeColor, range = colorScaleLim, only.finite = FALSE)
+    edgeColorMap <- scales::censor(edgeColor,
+                                   range = colorScaleLim,
+                                   only.finite = FALSE)
   } else if (colorScaleMapFun == "squish") {
-    edgeColorMap <- scales::squish(edgeColor, range = colorScaleLim, only.finite = FALSE)
+    edgeColorMap <- scales::squish(edgeColor,
+                                   range = colorScaleLim,
+                                   only.finite = FALSE)
   }
 
   # Remove edge self links
@@ -477,13 +485,15 @@ getRadialSetsData <- function(setSizes,
              dimnames = list(rownames(edgeWidth), colnames(edgeWidth)))
 
   # Maximum edge width
-  maxWidth <- signif(max(edgeWidth),1)
+  maxWidth <- signif(max(edgeWidth), 1)
 
   # Drop sets that do not have links
-  if(dropSets) {
+  if (dropSets) {
 
-    dropColor <- is.na(edgeColorMap) | (edgeColorMap == 0) | is.infinite(edgeColorMap)
-    dropWidth <- is.na(edgeWidthMap) | (edgeWidthMap == 0) | is.infinite(edgeWidthMap)
+    dropColor <- is.na(edgeColorMap) | (edgeColorMap == 0) |
+      is.infinite(edgeColorMap)
+    dropWidth <- is.na(edgeWidthMap) | (edgeWidthMap == 0) |
+      is.infinite(edgeWidthMap)
     dropInd <- which(colSums(dropColor | dropWidth) == ncol(edgeWidthMap))
 
     setSizesVec <- setSizesVec[-dropInd]
@@ -491,7 +501,7 @@ getRadialSetsData <- function(setSizes,
     nSets <- length(sets)
     edgeColorMap <- edgeColorMap[-dropInd, -dropInd]
     edgeWidthMap <- edgeWidthMap[-dropInd, -dropInd]
-    degreeMat <- degreeMat[-dropInd,]
+    degreeMat <- degreeMat[-dropInd, ]
   }
 
   return(list(edgeWidth = edgeWidth,
