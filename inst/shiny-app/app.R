@@ -16,74 +16,70 @@ library(tidyr)
 
 # Define UI ---------------------------------------------------------------
 ui <- fluidPage(
-
-    # Javascript and CSS files ----------------------------------------------
-    tagList(
-      tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
-        tags$head(singleton(tags$script(src = "windowSize.js")))
-    ),
-    div(
-      id = 'controlsContainer',
-    fluidRow(
+  # Javascript and CSS files ----------------------------------------------
+  tagList(
+    tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
+    tags$head(singleton(tags$script(src = "windowSize.js")))
+  ),
+  div(id = "controlsContainer",
+      fluidRow(
         column(3,
-               uiOutput("focusSetUI")
+               uiOutput("focusSetUI")),
+        column(
+          3,
+          # Link scaling input
+          selectizeInput(
+            "linkThickness",
+            label = "Link thickness:",
+            choices =
+              c(
+                "Percent shared items (normalized by union)" = "prop",
+                "Percent shared items (relative to origin)" = "prop1",
+                "Number of shared items" = "Ninter"
+              ),
+            multiple = FALSE,
+            selected = "prop"
+          )
         ),
-        column(3,
-               # Link scaling input
-               selectizeInput(
-                   "linkThickness",
-                   label = "Link thickness:",
-                   choices = c("Percent shared items (normalized by union)" = "prop",
-                               "Percent shared items (relative to origin)" = "prop1",
-                               "Number of shared items" = "Ninter"),
-                   multiple = FALSE,
-                   selected = "prop"
-               )
+        column(
+          3,
+          # Link scaling input
+          sliderInput(
+            "bezierW",
+            label = "Link shape:",
+            min = 0,
+            max = 1,
+            value = 1
+          )
         ),
-        column(3,
-               # Link scaling input
-               sliderInput(
-                 "bezierW",
-                 label = "Link shape:",
-                 min = 0,
-                 max = 1,
-                 value = 1
-               )
-        ),
-        column(3,
-               # Link scaling input
-               sliderInput(
-                 "bezierHRatio",
-                 label = "Link height ratio:",
-                 min = 0,
-                 max = 1,
-                 value = 0.75
-               )
+        column(
+          3,
+          # Link scaling input
+          sliderInput(
+            "bezierHRatio",
+            label = "Link height ratio:",
+            min = 0,
+            max = 1,
+            value = 0.75
+          )
         )
+      )),
+  fluidRow(
+    column(8, style = "padding-right:0px;",
+           div(id = "bigPlotContainer",
+               uiOutput("plotUI"))),
+    column(
+      4,
+      div(id = "smallPlotContainer",
+          uiOutput("ratingHistUI")),
+      div(id = "smallPlotContainer",
+          uiOutput("watchesHistUI"))
     )
-    ),
-    fluidRow(
-      column(8, style='padding-right:0px;',
-             div(
-               id = 'bigPlotContainer',
-             uiOutput("plotUI"))
-             ),
-      column(4,
-             div(
-               id = 'smallPlotContainer',
-               uiOutput("ratingHistUI")
-               ),
-             div(
-               id = 'smallPlotContainer',
-             uiOutput("watchesHistUI")
-             ))
-    ),
-    div(
-      id = 'tableContainer',
-    fluidRow(
-      column(12, align = "center", dataTableOutput("selectedTable"))
-    )
-    )
+  ),
+  div(id = "tableContainer",
+      fluidRow(
+        column(12, align = "center", dataTableOutput("selectedTable"))
+      ))
 )
 
 # Define server logic required to draw a histogram
@@ -134,9 +130,6 @@ server <- function(input, output, session) {
     # Define ID column (user specified)
     idName <- "movieId"
 
-    # Define max degree (user specified)
-    maxDegree <- 4
-
     # Calculate set sizes
     setSizes <-
       getSetSizes(movieSets, setNames)
@@ -164,13 +157,13 @@ server <- function(input, output, session) {
     width  <- session$clientData$output_radPlotImage_width
     height <- session$clientData$output_radPlotImage_height
 
-    outfile <- tempfile(fileext=".svg")
+    outfile <- tempfile(fileext = ".svg")
 
-    pxToIn <- 1/96
+    pxToIn <- 1 / 96
 
     svg(outfile,
-        width = width*pxToIn,
-        height = height*pxToIn)
+        width = width * pxToIn,
+        height = height * pxToIn)
 
     buildRadialSetsPlot(
       setSizes = summaryData()$setSizes,
@@ -221,13 +214,11 @@ server <- function(input, output, session) {
                "avgRating", "nRating", "label")
       )
 
-    ggplot(data = plotData %>% drop_na(avgRating),
+    ggplot(data = plotData %>% tidyr::drop_na(avgRating),
            aes(x = avgRating,
                fill = fct_relevel(label, "all items"))) +
       geom_density(alpha = 0.5) +
       scale_y_continuous(expand = expand_scale(mult = c(0, 0.025))) +
-      # scale_x_continuous(limits = c(0.5, 5.5),
-      #                    expand = expand_scale(mult = c(0, 0))) +
       theme_minimal(base_size = 18) +
       labs(title = "Average Rating",
            x = "Average Rating",
@@ -263,8 +254,6 @@ server <- function(input, output, session) {
            )) +
       geom_density(alpha = 0.5) +
       scale_y_continuous(expand = expand_scale(mult = c(0, 0.025))) +
-      # scale_x_continuous(limits = c(0.5, 5.5),
-      #                    expand = expand_scale(mult = c(0, 0))) +
       theme_minimal(base_size = 18) +
       labs(title = "Number of Ratings",
            x = "log10(Number of Ratings + 1)",
@@ -359,7 +348,7 @@ server <- function(input, output, session) {
     label <- ""
     if (!is.null(clickLoc())) {
       if (is.null(clickLoc()$location)) {
-        label = ""
+        label <- ""
       } else if (clickLoc()$location == "sector") {
         label <- clickLoc()$set
       } else if (clickLoc()$location == "bar") {
@@ -376,8 +365,6 @@ server <- function(input, output, session) {
 
   # Plot click actions ----------------------------------------------------
   tableData <- reactive({
-
-    # req(clickLoc())
 
     # Define set names
     setNames <- movieSets %>%
@@ -416,13 +403,16 @@ server <- function(input, output, session) {
              selected) %>%
       mutate(
         imdbId = glue(
-          "<a href='http://www.imdb.com/title/tt{imdbId}' target='_blank'>{imdbId}</a>"
+          "<a href='http://www.imdb.com/title/tt{imdbId}'
+          target='_blank'>{imdbId}</a>"
         ),
         tmdbId = glue(
-          "<a href='https://www.themoviedb.org/movie/{tmdbId}' target='_blank'>{tmdbId}</a>"
+          "<a href='https://www.themoviedb.org/movie/{tmdbId}'
+          target='_blank'>{tmdbId}</a>"
         ),
         movieId = glue(
-          "<a href='https://movielens.org/movies/{movieId}' target='_blank'>{movieId}</a>"
+          "<a href='https://movielens.org/movies/{movieId}'
+          target='_blank'>{movieId}</a>"
         )
       )
 
@@ -471,25 +461,12 @@ server <- function(input, output, session) {
                           nullOutside = F),
         inline = F
       ),
-      # plotOutput(
-      #   "radPlot",
-      #   width = glue("{pageHeight()*0.95}px"),
-      #   height = glue("{pageHeight()*0.95}px"),
-      #   click = "plotClick",
-      #   dblclick = "plotDblClick",
-      #   hover = hoverOpts("plot_hover",
-      #                     delay = 100,
-      #                     delayType = "debounce",
-      #                     clip = F,
-      #                     nullOutside = F),
-      #   inline = F
-      # ),
       # Tooltip output
       uiOutput("hover_info")
     )
   })
 
-  # Output rating histogram UI --------------------------------------------------------
+  # Output rating histogram UI -----------------------------------------------
   output$ratingHistUI <- renderUI({
     plotOutput(
       "ratingHist",
@@ -498,7 +475,7 @@ server <- function(input, output, session) {
     )
   })
 
-  # Output watches histogram UI --------------------------------------------------------
+  # Output watches histogram UI ----------------------------------------------
   output$watchesHistUI <- renderUI({
     plotOutput(
       "watchesHist",
