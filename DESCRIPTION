@@ -8,7 +8,7 @@ Author: c(
     person("Jessica", "Burnett", email = "jessicaleighburnett@gmail.com", role = c("aut"))
     )
 Maintainer: Nat Price <natbprice@gmail.com>
-Description: Create interactive, network-based visualizations of overlapping sets
+Description: Create interactive, network-based visualizations of overlapping sets.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
@@ -19,7 +19,8 @@ Imports:
     forcats,
     purrr,
     scales,
-    glue
+    glue,
+    knitr
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Suggests: 
