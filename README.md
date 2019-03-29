@@ -40,13 +40,13 @@ The bars in each sector indicate the number of items unique to each set,
 shared with one other set, shared with two other sets, or shared with
 three or more other sets.
 
-<img src= "./README-examplePlot-1.svg">
+<img src= "./man/figures/README-examplePlot-1.svg">
 
 In the diagram below, we focus on the crime genre. The links are now
 directional originating from the crime set and link thickness indicates
 the percent of crime movies that belong to the other genres.
 
-<img src= "./README-examplePlot2-1.svg">
+<img src= "./man/figures/README-examplePlot2-1.svg">
 
 #### Venn Euler Diagram
 
@@ -60,9 +60,9 @@ use the [venneuler](https://cran.r-project.org/package=venneuler)
 package to illustrate the problem with using Venn diagrams when we are
 interested in many overlapping sets.
 
-<img src= "./README-simpleVennDiag-1.svg">
+<img src= "./man/figures/README-simpleVennDiag-1.svg">
 
-<img src= "./README-complexVennDiag-1.svg">
+<img src= "./man/figures/README-complexVennDiag-1.svg">
 
 ## References
 
