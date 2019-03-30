@@ -179,23 +179,23 @@ buildRadialSetsPlot <- function(setSizes,
     }
   }
 
-  if (linkThickness == "percent") {
-    legendText <- paste0(seq(1, 0.25, -0.25) * maxWidth, "%")
-  } else {
-    legendText <- paste0(seq(1, 0.25, -0.25) * maxWidth * (1 / countScale))
-  }
-
-  # Lengend showing link thickness
-  if (showLegend){
-  legend(
-    "topleft",
-    inset = 0.05,
-    cex = sectorLabelFontSize,
-    title = legendTitle,
-    lwd = maxLinkThickness * seq(1, 0.25, -0.25),
-    col = linkColor,
-    legend = legendText,
-    bty = "n"
-  )
-  }
+  # if (linkThickness == "percent") {
+  #   legendText <- paste0(seq(1, 0.25, -0.25) * maxWidth, "%")
+  # } else {
+  #   legendText <- paste0(seq(1, 0.25, -0.25) * maxWidth * (1 / countScale))
+  # }
+  #
+  # # Lengend showing link thickness
+  # if (showLegend){
+  # legend(
+  #   "topleft",
+  #   inset = 0.05,
+  #   cex = sectorLabelFontSize,
+  #   title = legendTitle,
+  #   lwd = maxLinkThickness * seq(1, 0.25, -0.25),
+  #   col = linkColor,
+  #   legend = legendText,
+  #   bty = "n"
+  # )
+  # }
 }
