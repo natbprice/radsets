@@ -1,7 +1,7 @@
 Package: radsets
 Type: Package
 Title: Create Radial Set Diagrams for Visualizing Overlapping Sets
-Version: 0.1.0
+Version: 0.0.0.9000
 Author: c(
     person("Nathaniel", "Price", email = "natbprice@gmail.com", role = c("aut", "cre")),
     person("Christopher", "Chizinski", email = "cchizinski2@unl.edu", role = c("aut"))
