@@ -1,6 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![Travis build
+status](https://travis-ci.org/natbprice/radsets.svg?branch=master)](https://travis-ci.org/natbprice/radsets)
+
 ### The Problem
 
 The **radsets** package is a solution to the problem of how to visualize
