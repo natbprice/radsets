@@ -9,7 +9,8 @@ Author: c(
     )
 Maintainer: Nat Price <natbprice@gmail.com>
 Description: Create interactive, network-based visualizations of overlapping sets.
-License: What license is it under?
+URL: https://natbprice.github.io/radsets/
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
