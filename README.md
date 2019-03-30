@@ -7,7 +7,11 @@ status](https://travis-ci.org/natbprice/radsets.svg?branch=master)](https://trav
 [![Coverage
 status](https://codecov.io/gh/natbprice/radsets/branch/master/graph/badge.svg)](https://codecov.io/github/natbprice/radsets?branch=master)
 
-### The Problem
+**Package Website:** <https://natbprice.github.io/radsets/>
+
+**Source Code:** <https://github.com/natbprice/radsets>
+
+### radsets
 
 The **radsets** package is a solution to the problem of how to visualize
 large overlapping sets. In particular, when analyzing data with many

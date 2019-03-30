@@ -15,7 +15,8 @@ buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections,
   facing = "clockwise", axisLabels = FALSE, legendTitle = NULL,
   showLegend = FALSE, sectorLineWidth = 1, majorTick = FALSE,
   bezierW = 1, bezierHRatio = 0.75, sectorColor = "white",
-  barColor = "darkgrey")
+  barColor = "darkgrey", sectorFontCol = "black",
+  labelSectors = TRUE)
 }
 \arguments{
 \item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
@@ -91,6 +92,10 @@ thickness of links}
 \item{sectorColor}{color of sectors}
 
 \item{barColor}{color of bars}
+
+\item{sectorFontCol}{Font color of sector text}
+
+\item{labelSectors}{Add track of sector labels}
 }
 \description{
 Build radial sets plot

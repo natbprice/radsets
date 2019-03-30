@@ -13,6 +13,8 @@
 #' @param bezierHRatio height ratio for link curves
 #' @param sectorColor color of sectors
 #' @param barColor color of bars
+#' @param sectorFontCol Font color of sector text
+#' @param labelSectors Add track of sector labels
 #'
 #' @import circlize
 #'
@@ -44,7 +46,9 @@ buildRadialSetsPlot <- function(setSizes,
                                 bezierW = 1,
                                 bezierHRatio = 0.75,
                                 sectorColor = "white",
-                                barColor = "darkgrey") {
+                                barColor = "darkgrey",
+                                sectorFontCol = "black",
+                                labelSectors = TRUE) {
 
 
 
@@ -99,28 +103,36 @@ buildRadialSetsPlot <- function(setSizes,
   circlize::circos.initialize(sets, xlim = xlim, sector.width = setSizesVec)
 
   # Plot track of sector names
-  circlize::circos.trackPlotRegion(
-    track.index = 1,
-    bg.border = NA,
-    ylim = c(0, 1),
-    track.height = 0.3,
-    panel.fun = function(x, y) {
-      sector.index <- circlize::get.cell.meta.data("sector.index")
-      xlim <- circlize::get.cell.meta.data("xlim")
-      rlim <- circlize::get.cell.meta.data("ylim")
-      circlize::circos.text(xlim[2] / 2,
-                            rlim[1],
-                            adj = c(0, 0.5),
-                            sector.index,
-                            facing = facing,
-                            niceFacing = TRUE,
-                            cex = sectorLabelFontSize)
-    }
-  )
+  trackInd <- 0
+  if(labelSectors) {
+    trackInd <- trackInd + 1
+    circlize::circos.trackPlotRegion(
+      track.index = trackInd,
+      bg.border = NA,
+      ylim = c(0, 1),
+      track.height = 0.3,
+      panel.fun = function(x, y) {
+        sector.index <- circlize::get.cell.meta.data("sector.index")
+        xlim <- circlize::get.cell.meta.data("xlim")
+        rlim <- circlize::get.cell.meta.data("ylim")
+        circlize::circos.text(
+          xlim[2] / 2,
+          rlim[1],
+          adj = c(0, 0.5),
+          sector.index,
+          col = sectorFontCol,
+          facing = facing,
+          niceFacing = TRUE,
+          cex = sectorLabelFontSize
+        )
+      }
+    )
+  }
 
   # Plot track with bars for sum by degree (histograms)
+  trackInd <- trackInd + 1
   circlize::circos.trackPlotRegion(
-    track.index = 2,
+    track.index = trackInd,
     ylim = c(0, maxDegree),
     track.height = 0.2,
     bg.lwd = sectorLineWidth,
