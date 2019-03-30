@@ -8,6 +8,13 @@
 
 <title>Genre classifications of 27,000 movies — movieSets • radsets</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -34,6 +41,8 @@
 
 <meta property="og:description" content="A dataset containing the genres and other attributes of 27,000
 movies." />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -64,7 +73,7 @@ movies." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">radsets</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -126,17 +135,17 @@ movies.</p>
         
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A data frame with 27278 rows and 27 variables:</p><dl class='dl-horizontal'>
-  <dt>movieId</dt><dd><p>MovieLens id (https://movielens.org/movies/<code>movieId</code>)</p></dd>
-  <dt>title</dt><dd><p>movie title</p></dd>
-  <dt>year</dt><dd><p>year of release</p></dd>
-  <dt>imdbId</dt><dd><p>IMDB id (http://www.imdb.com/title/tt<code>imdbId</code>)</p></dd>
-  <dt>tmdbId</dt><dd><p>The Movie DB id (https://www.themoviedb.org/movie/<code>tmdbId</code>)</p></dd>
-  <dt>avgRating</dt><dd><p>average movie rating</p></dd>
-  <dt>nRating</dt><dd><p>number of ratings</p></dd>
-  <dt>genres</dt><dd><p>movie genres as string separated by "|"</p></dd>
-  <dt>Action:Western</dt><dd><p>binary columns indicating set membership</p></dd>
-</dl>
+    <p>A data frame with 27278 rows and 27 variables:</p><ul>
+<li><p>movieIdMovieLens id (https://movielens.org/movies/<code>movieId</code>)</p></li>
+<li><p>titlemovie title</p></li>
+<li><p>yearyear of release</p></li>
+<li><p>imdbIdIMDB id (http://www.imdb.com/title/tt<code>imdbId</code>)</p></li>
+<li><p>tmdbIdThe Movie DB id (https://www.themoviedb.org/movie/<code>tmdbId</code>)</p></li>
+<li><p>avgRatingaverage movie rating</p></li>
+<li><p>nRatingnumber of ratings</p></li>
+<li><p>genresmovie genres as string separated by "|"</p></li>
+<li><p>Action:Westernbinary columns indicating set membership</p></li>
+</ul>
     
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
@@ -158,7 +167,7 @@ movies.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nat Price.</p>
+  <p>Developed by Nathaniel Price, Christopher Chizinski, Jessica Burnett.</p>
 </div>
 
 <div class="pkgdown">

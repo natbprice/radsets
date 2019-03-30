@@ -1,6 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# radsets <img src="man/figures/logo.svg" align="right" alt="" width="120" />
+
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Travis build
 status](https://travis-ci.org/natbprice/radsets.svg?branch=master)](https://travis-ci.org/natbprice/radsets)
@@ -11,7 +13,7 @@ status](https://codecov.io/gh/natbprice/radsets/branch/master/graph/badge.svg)](
 
 **Source Code:** <https://github.com/natbprice/radsets>
 
-### radsets
+### Problem
 
 The **radsets** package is a solution to the problem of how to visualize
 large overlapping sets. In particular, when analyzing data with many

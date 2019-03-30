@@ -2,12 +2,12 @@ Package: radsets
 Type: Package
 Title: Create Radial Set Diagrams for Visualizing Overlapping Sets
 Version: 0.0.0.9000
-Author: c(
-    person("Nathaniel", "Price", email = "natbprice@gmail.com", role = c("aut", "cre")),
-    person("Christopher", "Chizinski", email = "cchizinski2@unl.edu", role = c("aut"))
+Authors@R: c(
+    person("Nathaniel", "Price", email = "natbprice@gmail.com", role = c("aut", "cre"),
+    comment= c(ORCID = "0000-0002-6450-617X")),
+    person("Christopher", "Chizinski", email = "cchizinski2@unl.edu", role = c("aut")),
     person("Jessica", "Burnett", email = "jessicaleighburnett@gmail.com", role = c("aut"))
     )
-Maintainer: Nat Price <natbprice@gmail.com>
 Description: Create interactive, network-based visualizations of overlapping sets.
 URL: https://natbprice.github.io/radsets/
 License: MIT + file LICENSE

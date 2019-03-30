@@ -8,6 +8,13 @@
 
 <title>Build radial sets plot — buildRadialSetsPlot • radsets</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -33,6 +40,8 @@
 <meta property="og:title" content="Build radial sets plot — buildRadialSetsPlot" />
 
 <meta property="og:description" content="Build radial sets plot" />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -63,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">radsets</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -123,15 +132,15 @@
     <pre class="usage"><span class='fu'>buildRadialSetsPlot</span>(<span class='no'>setSizes</span>, <span class='no'>setSizesByDegree</span>, <span class='no'>setIntersections</span>,
   <span class='kw'>setOrder</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>linkThickness</span> <span class='kw'>=</span> <span class='st'>"prop"</span>,
   <span class='kw'>linkColor</span> <span class='kw'>=</span> <span class='st'>"prop.relError"</span>, <span class='kw'>linkColorPal</span> <span class='kw'>=</span> <span class='st'>"RdBu"</span>,
-  <span class='kw'>focusSets</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>sectorLabelFontSize</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>axisLabelFontSize</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>maxLinkThickness</span> <span class='kw'>=</span> <span class='fl'>15</span>, <span class='kw'>countScale</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>facing</span> <span class='kw'>=</span> <span class='st'>"clockwise"</span>,
-  <span class='kw'>axisLabels</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>legendTitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>showLegend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>sectorLineWidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>sectorColor</span> <span class='kw'>=</span> <span class='st'>"white"</span>, <span class='kw'>majorTick</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>bezierW</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>bezierHRatio</span> <span class='kw'>=</span> <span class='fl'>0.75</span>, <span class='kw'>edgeWidthLim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>barColor</span> <span class='kw'>=</span> <span class='st'>"darkgrey"</span>, <span class='kw'>reverseLinkPal</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>reverseLinkPal</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>focusSets</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>countScale</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>colorScaleLim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>), <span class='kw'>colorScaleMapFun</span> <span class='kw'>=</span> <span class='st'>"squish"</span>,
   <span class='kw'>edgeScaleLim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>Inf</span>, <span class='fl'>Inf</span>), <span class='kw'>edgeScaleMapFun</span> <span class='kw'>=</span> <span class='st'>"censor"</span>,
-  <span class='kw'>edgeWidthRange</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>8</span>), <span class='kw'>dropSets</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+  <span class='kw'>edgeWidthRange</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>8</span>), <span class='kw'>dropSets</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>sectorLabelFontSize</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>axisLabelFontSize</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>facing</span> <span class='kw'>=</span> <span class='st'>"clockwise"</span>, <span class='kw'>axisLabels</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>legendTitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>showLegend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>sectorLineWidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>majorTick</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>bezierW</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>bezierHRatio</span> <span class='kw'>=</span> <span class='fl'>0.75</span>, <span class='kw'>sectorColor</span> <span class='kw'>=</span> <span class='st'>"white"</span>,
+  <span class='kw'>barColor</span> <span class='kw'>=</span> <span class='st'>"darkgrey"</span>, <span class='kw'>sectorFontCol</span> <span class='kw'>=</span> <span class='st'>"black"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,6 +180,10 @@ Partial ordering is performed using <code><a href='https://forcats.tidyverse.org
 palette from <code><a href='https://www.rdocumentation.org/packages/RColorBrewer/topics/ColorBrewer'>brewer.pal</a></code></p></td>
     </tr>
     <tr>
+      <th>reverseLinkPal</th>
+      <td><p>A logical input specifying if color scale should be reversed</p></td>
+    </tr>
+    <tr>
       <th>focusSets</th>
       <td><p>Character vector specifying name(s) of set(s) to focus on.
 If single set is specified, only links originating from set are shown. If
@@ -180,10 +193,6 @@ multiple sets are specified, only links between sets are shown.</p></td>
       <th>countScale</th>
       <td><p>An optional input to apply multiplicative scaling to set
 sizes</p></td>
-    </tr>
-    <tr>
-      <th>reverseLinkPal</th>
-      <td><p>A logical input specifying if color scale should be reversed</p></td>
     </tr>
     <tr>
       <th>colorScaleLim</th>
@@ -218,6 +227,58 @@ thickness of links</p></td>
       <th>dropSets</th>
       <td><p>A logical indicating if sets without links should be removed</p></td>
     </tr>
+    <tr>
+      <th>sectorLabelFontSize</th>
+      <td><p>font size of sector labels</p></td>
+    </tr>
+    <tr>
+      <th>axisLabelFontSize</th>
+      <td><p>font size of axis labels</p></td>
+    </tr>
+    <tr>
+      <th>facing</th>
+      <td><p>direction of sector labels</p></td>
+    </tr>
+    <tr>
+      <th>axisLabels</th>
+      <td><p>logical indicating if axis labels are show</p></td>
+    </tr>
+    <tr>
+      <th>legendTitle</th>
+      <td><p>logical indicating if legend should have title</p></td>
+    </tr>
+    <tr>
+      <th>showLegend</th>
+      <td><p>logical indicating if legend should be shown</p></td>
+    </tr>
+    <tr>
+      <th>sectorLineWidth</th>
+      <td><p>line width of sector border</p></td>
+    </tr>
+    <tr>
+      <th>majorTick</th>
+      <td><p>logical indicating if tick marks are shown</p></td>
+    </tr>
+    <tr>
+      <th>bezierW</th>
+      <td><p>w parameter for link curves</p></td>
+    </tr>
+    <tr>
+      <th>bezierHRatio</th>
+      <td><p>height ratio for link curves</p></td>
+    </tr>
+    <tr>
+      <th>sectorColor</th>
+      <td><p>color of sectors</p></td>
+    </tr>
+    <tr>
+      <th>barColor</th>
+      <td><p>color of bars</p></td>
+    </tr>
+    <tr>
+      <th>sectorFontCol</th>
+      <td><p>Font color of sector text</p></td>
+    </tr>
     </table>
     
 
@@ -233,7 +294,7 @@ thickness of links</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nat Price.</p>
+  <p>Developed by Nathaniel Price, Christopher Chizinski, Jessica Burnett.</p>
 </div>
 
 <div class="pkgdown">

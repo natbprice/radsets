@@ -8,6 +8,13 @@
 
 <title>Tooltip for radial sets plot — createRadialsetsTooltip • radsets</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -33,6 +40,8 @@
 <meta property="og:title" content="Tooltip for radial sets plot — createRadialsetsTooltip" />
 
 <meta property="og:description" content="Build tooltip for radial sets network plot" />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -63,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">radsets</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -121,18 +130,39 @@
     </div>
 
     <pre class="usage"><span class='fu'>createRadialsetsTooltip</span>(<span class='no'>setSizes</span>, <span class='no'>setSizesByDegree</span>, <span class='no'>setIntersections</span>,
-  <span class='no'>pointerLoc</span>, <span class='kw'>focusSet</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>linkThickness</span> <span class='kw'>=</span> <span class='st'>"prop"</span>)</pre>
+  <span class='no'>pointerLoc</span>, <span class='kw'>focusSets</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>linkThickness</span> <span class='kw'>=</span> <span class='st'>"prop"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>plotData</th>
-      <td><p>A data frame with data used in plot</p></td>
+      <th>setSizes</th>
+      <td><p>Data frame of set sizes from <code><a href='getSetSizes.html'>getSetSizes</a></code></p></td>
     </tr>
     <tr>
-      <th>hover</th>
-      <td><p>A named list created by <code><a href='https://www.rdocumentation.org/packages/shiny/topics/plotOutput'>plotOutput</a></code></p></td>
+      <th>setSizesByDegree</th>
+      <td><p>Data frame of set sizes by degree from
+<code><a href='getSetSizesByDegree.html'>getSetSizesByDegree</a></code></p></td>
+    </tr>
+    <tr>
+      <th>setIntersections</th>
+      <td><p>Data frame of set intersection sizes from
+<code><a href='getSetIntersections.html'>getSetIntersections</a></code></p></td>
+    </tr>
+    <tr>
+      <th>pointerLoc</th>
+      <td><p>A list from <code><a href='getPointerLoc.html'>getPointerLoc</a></code></p></td>
+    </tr>
+    <tr>
+      <th>focusSets</th>
+      <td><p>Character vector specifying name(s) of set(s) to focus on.
+If single set is specified, only links originating from set are shown. If
+multiple sets are specified, only links between sets are shown.</p></td>
+    </tr>
+    <tr>
+      <th>linkThickness</th>
+      <td><p>Character vector specifying name of variable from
+<code>setIntersections</code> data frame to map to link thickness</p></td>
     </tr>
     </table>
     
@@ -155,7 +185,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nat Price.</p>
+  <p>Developed by Nathaniel Price, Christopher Chizinski, Jessica Burnett.</p>
 </div>
 
 <div class="pkgdown">
