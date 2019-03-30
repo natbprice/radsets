@@ -30,6 +30,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-"
 )
 ```
+[![Travis build status](https://travis-ci.org/natbprice/radsets.svg?branch=master)](https://travis-ci.org/natbprice/radsets)
 
 ### The Problem
 The **radsets** package is a solution to the problem of how to visualize large overlapping sets. In particular, when analyzing data with many overlapping sets it is difficult to draw insight from a Venn diagram. Moreover, it may be impossible to draw a Venn diagram that accurately reflects the size of set intersections.
