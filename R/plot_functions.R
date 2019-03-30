@@ -1,6 +1,18 @@
 #' Build radial sets plot
 #'
 #' @inheritParams getRadialSetsData
+#' @param sectorLabelFontSize font size of sector labels
+#' @param axisLabelFontSize font size of axis labels
+#' @param facing direction of sector labels
+#' @param axisLabels logical indicating if axis labels are show
+#' @param legendTitle logical indicating if legend should have title
+#' @param showLegend logical indicating if legend should be shown
+#' @param sectorLineWidth line width of sector border
+#' @param majorTick logical indicating if tick marks are shown
+#' @param bezierW w parameter for link curves
+#' @param bezierHRatio height ratio for link curves
+#' @param sectorColor color of sectors
+#' @param barColor color of bars
 #'
 #' @export
 buildRadialSetsPlot <- function(setSizes,
@@ -10,29 +22,27 @@ buildRadialSetsPlot <- function(setSizes,
                                 linkThickness = "prop",
                                 linkColor = "prop.relError",
                                 linkColorPal = "RdBu",
-                                focusSets = "none",
-                                sectorLabelFontSize = 1,
-                                axisLabelFontSize = 1,
-                                maxLinkThickness = 15,
-                                countScale = 1,
-                                facing = "clockwise",
-                                axisLabels = FALSE,
-                                legendTitle = NULL,
-                                showLegend = FALSE,
-                                sectorLineWidth = 1,
-                                sectorColor = "white",
-                                majorTick = FALSE,
-                                bezierW = 1,
-                                bezierHRatio = 0.75,
-                                edgeWidthLim = NULL,
-                                barColor = "darkgrey",
                                 reverseLinkPal = FALSE,
+                                focusSets = "none",
+                                countScale = 1,
                                 colorScaleLim = c(-1, 1),
                                 colorScaleMapFun = "squish",
                                 edgeScaleLim = c(-Inf, Inf),
                                 edgeScaleMapFun = "censor",
                                 edgeWidthRange = c(1, 8),
-                                dropSets = FALSE) {
+                                dropSets = FALSE,
+                                sectorLabelFontSize = 1,
+                                axisLabelFontSize = 1,
+                                facing = "clockwise",
+                                axisLabels = FALSE,
+                                legendTitle = NULL,
+                                showLegend = FALSE,
+                                sectorLineWidth = 1,
+                                majorTick = FALSE,
+                                bezierW = 1,
+                                bezierHRatio = 0.75,
+                                sectorColor = "white",
+                                barColor = "darkgrey") {
 
 
 

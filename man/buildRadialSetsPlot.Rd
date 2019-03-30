@@ -7,15 +7,15 @@
 buildRadialSetsPlot(setSizes, setSizesByDegree, setIntersections,
   setOrder = NULL, linkThickness = "prop",
   linkColor = "prop.relError", linkColorPal = "RdBu",
-  focusSets = "none", sectorLabelFontSize = 1, axisLabelFontSize = 1,
-  maxLinkThickness = 15, countScale = 1, facing = "clockwise",
-  axisLabels = FALSE, legendTitle = NULL, showLegend = FALSE,
-  sectorLineWidth = 1, sectorColor = "white", majorTick = FALSE,
-  bezierW = 1, bezierHRatio = 0.75, edgeWidthLim = NULL,
-  barColor = "darkgrey", reverseLinkPal = FALSE,
+  reverseLinkPal = FALSE, focusSets = "none", countScale = 1,
   colorScaleLim = c(-1, 1), colorScaleMapFun = "squish",
   edgeScaleLim = c(-Inf, Inf), edgeScaleMapFun = "censor",
-  edgeWidthRange = c(1, 8), dropSets = FALSE)
+  edgeWidthRange = c(1, 8), dropSets = FALSE,
+  sectorLabelFontSize = 1, axisLabelFontSize = 1,
+  facing = "clockwise", axisLabels = FALSE, legendTitle = NULL,
+  showLegend = FALSE, sectorLineWidth = 1, majorTick = FALSE,
+  bezierW = 1, bezierHRatio = 0.75, sectorColor = "white",
+  barColor = "darkgrey")
 }
 \arguments{
 \item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
@@ -38,14 +38,14 @@ Partial ordering is performed using \code{\link[forcats]{fct_relevel}}}
 \item{linkColorPal}{Name of color palette to use for link colors. Must match
 palette from \code{\link[RColorBrewer]{brewer.pal}}}
 
+\item{reverseLinkPal}{A logical input specifying if color scale should be reversed}
+
 \item{focusSets}{Character vector specifying name(s) of set(s) to focus on.
 If single set is specified, only links originating from set are shown. If
 multiple sets are specified, only links between sets are shown.}
 
 \item{countScale}{An optional input to apply multiplicative scaling to set
 sizes}
-
-\item{reverseLinkPal}{A logical input specifying if color scale should be reversed}
 
 \item{colorScaleLim}{A numeric vector specifying upper and lower scale limits
 on link colors. Scale limits are enforced using \code{\link[scales]{censor}} or
@@ -67,6 +67,30 @@ thickness limits}
 thickness of links}
 
 \item{dropSets}{A logical indicating if sets without links should be removed}
+
+\item{sectorLabelFontSize}{font size of sector labels}
+
+\item{axisLabelFontSize}{font size of axis labels}
+
+\item{facing}{direction of sector labels}
+
+\item{axisLabels}{logical indicating if axis labels are show}
+
+\item{legendTitle}{logical indicating if legend should have title}
+
+\item{showLegend}{logical indicating if legend should be shown}
+
+\item{sectorLineWidth}{line width of sector border}
+
+\item{majorTick}{logical indicating if tick marks are shown}
+
+\item{bezierW}{w parameter for link curves}
+
+\item{bezierHRatio}{height ratio for link curves}
+
+\item{sectorColor}{color of sectors}
+
+\item{barColor}{color of bars}
 }
 \description{
 Build radial sets plot
