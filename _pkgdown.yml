@@ -1,0 +1,3 @@
+figures:
+  dev: "svglite::svglite"
+  fig.ext: "svg"

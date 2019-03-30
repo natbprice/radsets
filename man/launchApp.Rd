@@ -12,9 +12,3 @@ shiny application object
 \description{
 Launches the shiny app
 }
-\examples{
-\donttest{
-launchApp()
-}
-
-}

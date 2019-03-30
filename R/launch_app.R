@@ -2,10 +2,6 @@
 #'
 #' @return shiny application object
 #'
-#' @examples
-#' \donttest{
-#' launchApp()
-#' }
 #'
 #' @export launchApp
 launchApp <- function() {
