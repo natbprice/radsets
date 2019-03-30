@@ -1,8 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Travis build
 status](https://travis-ci.org/natbprice/radsets.svg?branch=master)](https://travis-ci.org/natbprice/radsets)
+[![Coverage
+status](https://codecov.io/gh/natbprice/radsets/branch/master/graph/badge.svg)](https://codecov.io/github/natbprice/radsets?branch=master)
 
 ### The Problem
 

@@ -27,6 +27,7 @@ Suggests:
     rmarkdown,
     testthat,
     shiny,
-    ggplot2
+    ggplot2,
+    covr
 Depends: 
     circlize
