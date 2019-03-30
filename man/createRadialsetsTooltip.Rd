@@ -5,12 +5,25 @@
 \title{Tooltip for radial sets plot}
 \usage{
 createRadialsetsTooltip(setSizes, setSizesByDegree, setIntersections,
-  pointerLoc, focusSet = "none", linkThickness = "prop")
+  pointerLoc, focusSets = "none", linkThickness = "prop")
 }
 \arguments{
-\item{plotData}{A data frame with data used in plot}
+\item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
 
-\item{hover}{A named list created by \code{\link[shiny]{plotOutput}}}
+\item{setSizesByDegree}{Data frame of set sizes by degree from
+\code{\link{getSetSizesByDegree}}}
+
+\item{setIntersections}{Data frame of set intersection sizes from
+\code{\link{getSetIntersections}}}
+
+\item{pointerLoc}{A list from \code{\link{getPointerLoc}}}
+
+\item{focusSets}{Character vector specifying name(s) of set(s) to focus on.
+If single set is specified, only links originating from set are shown. If
+multiple sets are specified, only links between sets are shown.}
+
+\item{linkThickness}{Character vector specifying name of variable from
+\code{setIntersections} data frame to map to link thickness}
 }
 \value{
 A tooltip created as a panel using \code{\link[shiny]{wellPanel}}

@@ -7,6 +7,18 @@
 optimizeLinkOrder(setSizes, setSizesByDegree, setIntersections,
   linkThickness = "prop")
 }
+\arguments{
+\item{setSizes}{Data frame of set sizes from \code{\link{getSetSizes}}}
+
+\item{setSizesByDegree}{Data frame of set sizes by degree from
+\code{\link{getSetSizesByDegree}}}
+
+\item{setIntersections}{Data frame of set intersection sizes from
+\code{\link{getSetIntersections}}}
+
+\item{linkThickness}{Character vector specifying name of variable from
+\code{setIntersections} data frame to map to link thickness}
+}
 \description{
 Optimize link order to minimize ink
 }

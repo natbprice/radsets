@@ -7,12 +7,11 @@
 getRadialSetsMetadata(radialSetsData, bezierW = 1, bezierHRatio = 0.5)
 }
 \arguments{
-\item{plotData}{A data frame with data used in plot}
+\item{radialSetsData}{Data frame from \code{\link{getRadialSetsData}}}
 
-\item{hover}{A named list created by \code{\link[shiny]{plotOutput}}}
-}
-\value{
-A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
+\item{bezierW}{w parameter for link curves}
+
+\item{bezierHRatio}{height ratio for link curves}
 }
 \description{
 Build tooltip for radial sets network plot

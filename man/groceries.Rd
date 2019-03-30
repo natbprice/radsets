@@ -5,7 +5,7 @@
 \alias{groceries}
 \title{Point-of-sale transaction data from grocery outlet}
 \format{A data frame with 9835 rows and 170 variables:
-\describe{
+\itemize{
   \item{frankfurter:bags}{logical columns indicating set membership}
   \item{id}{a transaction id based on row number}
 }}

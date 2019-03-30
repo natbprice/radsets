@@ -5,7 +5,7 @@
 \alias{movieSets}
 \title{Genre classifications of 27,000 movies}
 \format{A data frame with 27278 rows and 27 variables:
-\describe{
+\itemize{
   \item{movieId}{MovieLens id (https://movielens.org/movies/\code{movieId})}
   \item{title}{movie title}
   \item{year}{year of release}

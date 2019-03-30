@@ -21,7 +21,8 @@ Imports:
     purrr,
     scales,
     glue,
-    knitr
+    knitr,
+    rlang
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Suggests: 
@@ -31,4 +32,5 @@ Suggests:
     ggplot2,
     covr
 Depends: 
+    R (>= 2.10),
     circlize

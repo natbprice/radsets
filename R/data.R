@@ -4,7 +4,7 @@
 #' movies.
 #'
 #' @format A data frame with 27278 rows and 27 variables:
-#' \describe{
+#' \itemize{
 #'   \item{movieId}{MovieLens id (https://movielens.org/movies/\code{movieId})}
 #'   \item{title}{movie title}
 #'   \item{year}{year of release}
@@ -26,7 +26,7 @@
 #' package and cite accordingly.
 #'
 #' @format A data frame with 9835 rows and 170 variables:
-#' \describe{
+#' \itemize{
 #'   \item{frankfurter:bags}{logical columns indicating set membership}
 #'   \item{id}{a transaction id based on row number}
 #' }

@@ -8,12 +8,16 @@ getPointerLoc(metadata, pointer, plotDomain = list(left = -1.08, right =
   1.08, bottom = -1.08, top = 1.08), transCoord = FALSE)
 }
 \arguments{
-\item{plotData}{A data frame with data used in plot}
+\item{metadata}{A list of data frames from
+\code{\link{getRadialSetsMetadata}}}
 
-\item{hover}{A named list created by \code{\link[shiny]{plotOutput}}}
-}
-\value{
-A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
+\item{pointer}{A named list created by \code{\link[shiny]{plotOutput}}}
+
+\item{plotDomain}{A list of dimensions for converting pointer location on
+image to plot coordinates}
+
+\item{transCoord}{A logical indicating if coodinates from \code{pointer} should be
+transformed based on \code{plotDomain}}
 }
 \description{
 Build tooltip for radial sets network plot

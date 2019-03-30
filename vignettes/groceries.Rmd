@@ -44,12 +44,59 @@ setSizesByDegree <-
 # Calculate edge data
 setIntersections <-
   getSetIntersections(groceries, setNames, idName)
+```
+
+```{r, eval = FALSE}
 
 # Optimize link order
 optOrder <- optimizeLinkOrder(setSizes,
                               setSizesByDegree,
                               setIntersections,
                               linkThickness = "prop")
+```
+
+```{r, echo = FALSE}
+optOrder <- c("toilet cleaner", "prosecco", "baby cosmetics", "cream", "cookware", 
+"syrup", "sparkling wine", "bathroom cleaner", "liver loaf", 
+"salad dressing", "skin care", "rum", "tea", "flower (seeds)", 
+"nut snack", "specialty fat", "specialty vegetables", "artif. sweetener", 
+"potato products", "finished products", "liquor (appetizer)", 
+"spices", "jam", "chewing gum", "spread cheese", "dental care", 
+"kitchen towels", "white wine", "zwieback", "sweet spreads", 
+"curd cheese", "packaged fruit/vegetables", "seasonal products", 
+"sauces", "soups", "cooking chocolate", "meat spreads", "beverages", 
+"dish cleaner", "candles", "vinegar", "abrasive cleaner", "cleaner", 
+"female sanitary products", "dog food", "roll products ", "pot plants", 
+"cling film/bags", "house keeping products", "frozen potato products", 
+"canned fruit", "rice", "ice cream", "frozen fish", "frozen dessert", 
+"chocolate marshmallow", "turkey", "semi-finished bread", "meat", 
+"softener", "detergent", "pickled vegetables", "mayonnaise", 
+"mustard", "ketchup", "canned fish", "specialty chocolate", "condensed milk", 
+"cake bar", "specialty bar", "soft cheese", "pet care", "dishes", 
+"misc. beverages", "specialty cheese", "canned vegetables", "salt", 
+"grapes", "cat food", "butter milk", "frozen meals", "UHT-milk", 
+"pasta", "hard cheese", "oil", "red/blush wine", "liquor", "baking powder", 
+"sugar", "flour", "popcorn", "sliced cheese", "herbs", "salty snack", 
+"hamburger meat", "Instant food products", "dessert", "coffee", 
+"processed cheese", "ham", "white bread", "candy", "chocolate", 
+"waffles", "long life bakery product", "onions", "canned beer", 
+"butter", "domestic eggs", "pastry", "bottled water", "shopping bags", 
+"pork", "bottled beer", "curd", "fruit/vegetable juice", "margarine", 
+"newspapers", "brown bread", "chicken", "frozen vegetables", 
+"frankfurter", "cream cheese ", "napkins", "hygiene articles", 
+"berries", "whipped/sour cream", "soda", "sausage", "beef", "rolls/buns", 
+"yogurt", "whole milk", "other vegetables", "root vegetables", 
+"tropical fruit", "pip fruit", "citrus fruit", "frozen fruits", 
+"cereals", "soap", "hair spray", "ready soups", "nuts/prunes", 
+"brandy", "whisky", "decalcifier", "light bulbs", "organic products", 
+"organic sausage", "cocoa drinks", "preservation products", "instant coffee", 
+"pudding powder", "honey", "tidbits", "bags", "rubbing alcohol", 
+"snack products", "male cosmetics", "fish", "kitchen utensil", 
+"flower soil/fertilizer", "photo/film", "make up remover", "frozen chicken", 
+"baby food", "sound storage medium", "liqueur")
+```
+
+```{r}
 buildRadialSetsPlot(
   setSizes,
   setSizesByDegree,

@@ -2,10 +2,8 @@
 #'
 #' Build tooltip for radial sets network plot
 #'
-#' @param plotData A data frame with data used in plot
-#' @param hover A named list created by \code{\link[shiny]{plotOutput}}
-#'
-#' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
+#' @inheritParams buildRadialSetsPlot
+#' @param radialSetsData Data frame from \code{\link{getRadialSetsData}}
 #'
 #' @import dplyr
 #'
@@ -128,10 +126,13 @@ getRadialSetsMetadata <- function(radialSetsData,
 #'
 #' Build tooltip for radial sets network plot
 #'
-#' @param plotData A data frame with data used in plot
-#' @param hover A named list created by \code{\link[shiny]{plotOutput}}
-#'
-#' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
+#' @param metadata A list of data frames from
+#' \code{\link{getRadialSetsMetadata}}
+#' @param pointer A named list created by \code{\link[shiny]{plotOutput}}
+#' @param plotDomain A list of dimensions for converting pointer location on
+#' image to plot coordinates
+#' @param transCoord A logical indicating if coodinates from \code{pointer} should be
+#' transformed based on \code{plotDomain}
 #'
 #' @import dplyr
 #'
@@ -246,8 +247,8 @@ getPointerLoc <- function(metadata,
 #'
 #' Build tooltip for radial sets network plot
 #'
-#' @param plotData A data frame with data used in plot
-#' @param hover A named list created by \code{\link[shiny]{plotOutput}}
+#' @inheritParams getRadialSetsData
+#' @param pointerLoc A list from \code{\link{getPointerLoc}}
 #'
 #' @return A tooltip created as a panel using \code{\link[shiny]{wellPanel}}
 #'
@@ -259,7 +260,7 @@ createRadialsetsTooltip <- function(setSizes,
                                     setSizesByDegree,
                                     setIntersections,
                                     pointerLoc,
-                                    focusSet = "none",
+                                    focusSets = "none",
                                     linkThickness = "prop") {
 
   location <- pointerLoc$location
@@ -277,7 +278,7 @@ createRadialsetsTooltip <- function(setSizes,
     name1 <- pointerLoc$set1
     name2 <- pointerLoc$set2
     linkName <- paste0(name1,
-                       ifelse(focusSet == "none", " and ", " to "),
+                       ifelse(focusSets == "none", " and ", " to "),
                        name2)
 
     overlap <-
@@ -290,7 +291,7 @@ createRadialsetsTooltip <- function(setSizes,
       overlap <- overlap * 100
     }
     overlap <- round(overlap)
-    if (focusSet == "none") {
+    if (focusSets == "none") {
       if (linkThickness %in% c("prop", "prop1", "prop.relError")) {
         label <-
           glue("{overlap}% of all {name1} and {name2} </br>

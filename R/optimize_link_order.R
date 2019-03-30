@@ -2,8 +2,11 @@
 #'
 #' Optimize link order to minimize ink
 #'
+#' @inheritParams getRadialSetsData
+#'
 #' @import dplyr
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #'
 #' @export
 optimizeLinkOrder <- function(setSizes,
@@ -14,7 +17,7 @@ optimizeLinkOrder <- function(setSizes,
     # Overlap between sets sorted largest to smallest
     overlaps <-
       setIntersections %>%
-      filter(as.numeric(set1) < as.numeric(set2)) %>%
+      filter(as.numeric(.data$set1) < as.numeric(.data$set2)) %>%
       arrange(desc(!!sym(linkThickness)))
 
     # Initialize chains of sets
@@ -48,20 +51,20 @@ optimizeLinkOrder <- function(setSizes,
           # Calculate node positions
           nodes <-
             setSizes %>%
-            mutate(set = forcats::fct_relevel(set, setOrder[[i]])) %>%
-            arrange(set) %>%
-            mutate(Ntotal = sum(N),
+            mutate(set = forcats::fct_relevel(.data$set, setOrder[[i]])) %>%
+            arrange(.data$set) %>%
+            mutate(Ntotal = sum(.data$N),
                    pad = 1) %>%
             mutate(
-              theta = N / Ntotal * (360 - sum(pad)),
+              theta = .data$N / .data$Ntotal * (360 - sum(.data$pad)),
               r = 0.47,
-              theta2 = 360 - (cumsum(theta) + cumsum(pad) - 1),
-              theta1 = theta2 + theta,
-              thetaC = theta1 + (theta2 - theta1) / 2,
-              xc = r * cos(thetaC * (pi / 180)),
-              yc = r * sin(thetaC * (pi / 180))
+              theta2 = 360 - (cumsum(.data$theta) + cumsum(.data$pad) - 1),
+              theta1 = .data$theta2 + .data$theta,
+              thetaC = .data$theta1 + (.data$theta2 - .data$theta1) / 2,
+              xc = .data$r * cos(.data$thetaC * (pi / 180)),
+              yc = .data$r * sin(.data$thetaC * (pi / 180))
             ) %>%
-            mutate(set = as.character(set))
+            mutate(set = as.character(.data$set))
 
           # Calculate ink used to plot links
           ink[i] <-
@@ -70,19 +73,19 @@ optimizeLinkOrder <- function(setSizes,
                    set2 %in% setOrder[[i]]) %>%
             filter(set1 != set2) %>%
             select(set1, set2, w = linkThickness) %>%
-            mutate(set1 = as.character(set1),
-                   set2 = as.character(set2)) %>%
-            left_join(nodes %>% select(set, x1 = xc, y1 = yc),
+            mutate(set1 = as.character(.data$set1),
+                   set2 = as.character(.data$set2)) %>%
+            left_join(nodes %>% select(.data$set, x1 = .data$xc, y1 = .data$yc),
                       by = c("set1" = "set")) %>%
-            left_join(nodes %>% select(set, x2 = xc, y2 = yc),
+            left_join(nodes %>% select(.data$set, x2 = .data$xc, y2 = .data$yc),
                       by = c("set2" = "set")) %>%
             mutate(
-              dx = x2 - x1,
-              dy = x2 - x1,
-              s = sqrt(dx ^ 2 + dy ^ 2),
-              ink = s * w
+              dx = .data$x2 - .data$x1,
+              dy = .data$x2 - .data$x1,
+              s = sqrt(.data$dx ^ 2 + .data$dy ^ 2),
+              ink = .data$s * .data$w
             ) %>%
-            summarize(ink = sum(ink)) %>%
+            summarize(ink = sum(.data$ink)) %>%
             pull(ink)
         }
 

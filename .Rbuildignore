@@ -5,3 +5,6 @@
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^.lintr$
+^data-raw$
+^README\.rmd$

@@ -14,6 +14,8 @@
 #' @param sectorColor color of sectors
 #' @param barColor color of bars
 #'
+#' @import circlize
+#'
 #' @export
 buildRadialSetsPlot <- function(setSizes,
                                 setSizesByDegree,
