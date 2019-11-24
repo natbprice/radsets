@@ -81,7 +81,9 @@ interested in many overlapping sets.
 Radial Sets diagrams were originally proposed by Alsallakh, Aigner,
 Miksch, and Hauser. The **radsets** package is unaffiliated with these
 researchers and the visualizations produced differ slightly from the
-original design.
+original design. This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS). No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall pthe fact of release constitute any such warranty. The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.
+
+## References
 
 Alsallakh, B., Aigner, W., Miksch, S., & Hauser, H. (2013). Radial sets:
 Interactive visual analysis of large overlapping sets. IEEE Transactions
