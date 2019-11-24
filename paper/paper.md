@@ -8,10 +8,10 @@ tags:
   - data analytics
 authors:
   - name: Nathaniel B. Price
-    orcid: 
+    orcid: 0000-0002-6450-617X
     affiliation: "1, 2"
   - name: Jessica L. Burnett
-    orcid: 
+    orcid: 0000-0002-6450-617X
     affiliation: "1, 3"
 affiliations:
  - name: School of Natural Resources, University of Nebraska
