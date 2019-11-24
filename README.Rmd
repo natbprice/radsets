@@ -1,5 +1,6 @@
 ---
 output: github_document
+bibliography: paper/paper.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -36,6 +37,7 @@ knitr::opts_chunk$set(
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Travis build status](https://travis-ci.org/natbprice/radsets.svg?branch=master)](https://travis-ci.org/natbprice/radsets)
 [![Coverage status](https://codecov.io/gh/natbprice/radsets/branch/master/graph/badge.svg)](https://codecov.io/github/natbprice/radsets?branch=master)
+[![License: CC0-1.0](https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
 
 **Package Website:** https://natbprice.github.io/radsets/
 
@@ -47,7 +49,7 @@ The **radsets** package is a solution to the problem of how to visualize large o
 The solution implemented in the **radsets** package is a based on Radial Sets diagrams (see references). Radial Sets diagrams are an interactive, network-based visualization for the analysis of ovarlapping sets.
 
 ### MovieLens Example
-The [MovieLens dataset](https://grouplens.org/datasets/movielens/20m/) includes 
+The [MovieLens dataset](https://grouplens.org/datasets/movielens/20m/) [@harper2016movielens] includes 
 19 genre attributes for 27,000 movies.
 
 #### Radial Sets Diagram
@@ -159,7 +161,11 @@ v <- venneuler::venneuler(m)
 plot(v)
 ```
 
-## References
-Radial Sets diagrams were originally proposed by Alsallakh, Aigner, Miksch, and Hauser. The **radsets** package is unaffiliated with these researchers and the visualizations produced differ slightly from the original design.
+## Acknowledgements
+Radial Sets diagrams were originally proposed by [@alsallakh2013radial]. The __radsets__ package is unaffiliated with these researchers and the visualizations produced differ slightly from the original design.
 
-Alsallakh, B., Aigner, W., Miksch, S., & Hauser, H. (2013). Radial sets: Interactive visual analysis of large overlapping sets. IEEE Transactions on Visualization and Computer Graphics, 19(12), 2496–2505. Retrieved from http://ieeexplore.ieee.org/abstract/document/6634104/
+This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS). No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall pthe fact of release constitute any such warranty. The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.
+
+## References
+
+<!-- Alsallakh, B., Aigner, W., Miksch, S., & Hauser, H. (2013). Radial sets: Interactive visual analysis of large overlapping sets. IEEE Transactions on Visualization and Computer Graphics, 19(12), 2496–2505. Retrieved from http://ieeexplore.ieee.org/abstract/document/6634104/ -->
