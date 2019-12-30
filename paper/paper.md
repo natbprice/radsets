@@ -15,13 +15,13 @@ authors:
     affiliation: "1"
   - name: Jessica L. Burnett
     orcid: 0000-0002-6450-617X
-    affiliation: "1, 3"
+    affiliation: "3"
 affiliations:
  - name: School of Natural Resources, University of Nebraska
    index: 1
  - name: ICF
    index: 2
- - name: Science Analytics and Synthesis, Core Science Systems, U.S. Geological Survey
+ - name: U.S. Geological Survey Science Analytics and Synthesis, Core Science Systems
    index: 3
 date: 24 November 2019
 bibliography: paper.bib
