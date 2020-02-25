@@ -77,7 +77,7 @@ interested in many overlapping sets.
 
 <img src= "./man/figures/README-complexVennDiag-1.svg">
 
-## References
+## Acknowledgements
 
 Radial Sets diagrams were originally proposed by Alsallakh, Aigner,
 Miksch, and Hauser. The **radsets** package is unaffiliated with these
